@@ -7,233 +7,80 @@ class MiddlemanTradeListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiddlemanPageScaffold(
+    return MiddlemanScreenScaffold(
       title: 'รายการซื้อขายข้าวโพด',
-      subtitle: 'ติดตามต้นทุน รับรู้รายได้ และตรวจสอบประวัติการซื้อขายแบบละเอียด',
-      badges: const [
-        MiddlemanPill(
-          icon: Icons.bar_chart,
-          label: 'ยอดรับซื้อเดือนนี้ 420 ตัน',
-          color: MiddlemanColors.blue,
-        ),
-        MiddlemanPill(
-          icon: Icons.payments_outlined,
-          label: 'กำไรขั้นต้น 18%',
-          color: MiddlemanColors.green,
-        ),
+      subtitle: 'ตรวจสอบประวัติรับซื้อและส่งมอบ พร้อมเชื่อมโยงถึงเกษตรกรต้นทาง',
+      actionChips: const [
+        MiddlemanTag(label: 'เดือนนี้ 42 รายการ', color: MiddlemanPalette.primary),
+        MiddlemanTag(label: 'ยอดรวม 3.6 ล้านบาท', color: MiddlemanPalette.success),
       ],
-      children: const [
-        _TradeSummaryCard(),
-        MiddlemanSectionHeader(
-          'ตัวกรองข้อมูล',
-          icon: Icons.filter_list,
-          color: MiddlemanColors.orange,
+      children: [
+        const MiddlemanSection(
+          title: 'ฟิลเตอร์ค้นหา',
+          icon: Icons.filter_alt_outlined,
         ),
-        _FilterFormCard(),
-        MiddlemanSectionHeader(
-          'ประวัติการซื้อขาย',
-          icon: Icons.receipt_long,
-          color: MiddlemanColors.blue,
+        _buildFilterBar(),
+        const MiddlemanSection(
+          title: 'รายการล่าสุด',
+          icon: Icons.list_alt_outlined,
         ),
-        _TradeHistoryTable(),
+        ..._buildTradeCards(),
+        const MiddlemanSection(
+          title: 'สรุปตามโรงงานปลายทาง',
+          icon: Icons.factory_outlined,
+        ),
+        _buildFactorySummary(),
       ],
     );
   }
-}
 
-class _TradeSummaryCard extends StatelessWidget {
-  const _TradeSummaryCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return MiddlemanCard(
-      gradient: const LinearGradient(
-        colors: [Color(0xFFF4F9F5), Color(0xFFE5F6E6)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'ภาพรวมผลการซื้อขาย',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: const [
-              _TradeStat(
-                icon: Icons.shopping_cart_outlined,
-                color: MiddlemanColors.blue,
-                label: 'ยอดรับซื้อวันนี้',
-                value: '72,500 กก.',
-              ),
-              _TradeStat(
-                icon: Icons.attach_money,
-                color: MiddlemanColors.green,
-                label: 'ยอดขายโรงงาน',
-                value: '1.85 ลบ.',
-              ),
-              _TradeStat(
-                icon: Icons.trending_up,
-                color: MiddlemanColors.orange,
-                label: 'อัตรากำไรเฉลี่ย',
-                value: '18%',
-              ),
-              _TradeStat(
-                icon: Icons.receipt_long,
-                color: MiddlemanColors.purple,
-                label: 'จำนวนรายการ',
-                value: '28 รายการ',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TradeStat extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String label;
-  final String value;
-
-  const _TradeStat({
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildFilterBar() {
     return Container(
-      width: 150,
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: MiddlemanColors.elevatedShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.all(10),
-            child: Icon(icon, color: color),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-              color: color,
-            ),
-          ),
+        boxShadow: const [
+          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
-    );
-  }
-}
-
-class _FilterFormCard extends StatelessWidget {
-  const _FilterFormCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return MiddlemanCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
             children: const [
-              Icon(Icons.search, color: MiddlemanColors.orange),
-              SizedBox(width: 8),
-              Text(
-                'ปรับช่วงเวลาหรือประเภทธุรกรรม',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-              ),
+              _FilterChip(label: 'ทั้งหมด'),
+              _FilterChip(label: 'รอชำระเงิน'),
+              _FilterChip(label: 'ชำระแล้ว'),
+              _FilterChip(label: 'ส่งต่อโรงงาน'),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'ค้นหาเกษตรกร/โรงงาน',
-                    prefixIcon: Icon(Icons.manage_search),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'ค้นหาด้วยชื่อเกษตรกร',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    filled: true,
+                    fillColor: const Color(0xFFF7F9FC),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'ประเภท',
-                    prefixIcon: Icon(Icons.category_outlined),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'ค้นหาด้วยโรงงานปลายทาง',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    filled: true,
+                    fillColor: const Color(0xFFF7F9FC),
                   ),
-                  value: 'รับซื้อ',
-                  onChanged: (_) {},
-                  items: const [
-                    DropdownMenuItem(value: 'รับซื้อ', child: Text('รับซื้อจากเกษตรกร')),
-                    DropdownMenuItem(value: 'ขาย', child: Text('ขายให้โรงงาน')),
-                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'วันที่เริ่มต้น',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
-                  ),
-                  initialValue: '10 มิ.ย. 2568',
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'วันที่สิ้นสุด',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
-                  ),
-                  initialValue: '16 มิ.ย. 2568',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              FilledButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.refresh),
-                label: const Text('ใช้ตัวกรอง'),
-              ),
-              const SizedBox(width: 12),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.download_outlined),
-                label: const Text('ส่งออกเป็น Excel'),
               ),
             ],
           ),
@@ -241,158 +88,174 @@ class _FilterFormCard extends StatelessWidget {
       ),
     );
   }
-}
 
-class _TradeHistoryTable extends StatelessWidget {
-  const _TradeHistoryTable();
-
-  @override
-  Widget build(BuildContext context) {
-    final records = const [
+  List<Widget> _buildTradeCards() {
+    final trades = [
       _TradeRecord(
-        date: '16 มิ.ย. 2568',
-        type: 'ขายให้โรงงาน',
-        partner: 'ไทยฟีด - ขอนแก่น',
-        lot: 'A1025',
-        weight: '30,000 กก.',
-        price: '1,200,000 บ.',
-        margin: '+12.4%',
+        ticket: 'RC-2024-068',
+        farmer: 'คุณสมศรี ทองดี',
+        area: 'หมู่ 2 ตำบลหนองสองห้อง',
+        weight: '8,200 กก.',
+        price: '69,720 บาท',
+        factory: 'โรงงานชัยภูมิ',
+        status: 'ส่งต่อโรงงาน',
+        statusColor: MiddlemanPalette.success,
       ),
       _TradeRecord(
-        date: '16 มิ.ย. 2568',
-        type: 'รับซื้อ',
-        partner: 'วิไลการเกษตร',
-        lot: 'A1025',
-        weight: '30,000 กก.',
-        price: '252,000 บ.',
-        margin: '-',
+        ticket: 'RC-2024-069',
+        farmer: 'สหกรณ์บ้านหนองโน',
+        area: 'หมู่ 8 ตำบลโนนแดง',
+        weight: '7,500 กก.',
+        price: '63,000 บาท',
+        factory: 'โรงงานขอนแก่น',
+        status: 'รอรถขนส่ง',
+        statusColor: MiddlemanPalette.primary,
       ),
       _TradeRecord(
-        date: '15 มิ.ย. 2568',
-        type: 'ขายให้โรงงาน',
-        partner: 'ไทยฟีด - ชัยภูมิ',
-        lot: 'A1024',
-        weight: '22,000 กก.',
-        price: '860,000 บ.',
-        margin: '+10.8%',
-      ),
-      _TradeRecord(
-        date: '15 มิ.ย. 2568',
-        type: 'รับซื้อ',
-        partner: 'สมหมายไร่ข้าวโพด',
-        lot: 'A1024',
-        weight: '22,000 กก.',
-        price: '184,800 บ.',
-        margin: '-',
+        ticket: 'RC-2024-070',
+        farmer: 'กลุ่มวิสาหกิจบ้านโคก',
+        area: 'หมู่ 11 ตำบลคอนฉิม',
+        weight: '9,100 กก.',
+        price: '76,260 บาท',
+        factory: 'โรงงานลพบุรี',
+        status: 'รอชำระเงิน',
+        statusColor: MiddlemanPalette.warning,
       ),
     ];
 
-    return MiddlemanCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('วันที่')),
-                DataColumn(label: Text('ประเภท')),
-                DataColumn(label: Text('คู่ค้า/เกษตรกร')),
-                DataColumn(label: Text('ล็อต')),
-                DataColumn(label: Text('น้ำหนัก')),
-                DataColumn(label: Text('มูลค่า')),
-                DataColumn(label: Text('กำไร/ส่วนต่าง')),
-              ],
-              rows: records
-                  .map(
-                    (record) => DataRow(
-                      cells: [
-                        DataCell(Text(record.date)),
-                        DataCell(_TradeTypeChip(type: record.type)),
-                        DataCell(Text(record.partner)),
-                        DataCell(Text(record.lot)),
-                        DataCell(Text(record.weight)),
-                        DataCell(Text(record.price)),
-                        DataCell(Text(
-                          record.margin,
-                          style: TextStyle(
-                            color: record.margin.startsWith('+')
-                                ? MiddlemanColors.green
-                                : Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )),
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
+    return [
+      for (final trade in trades)
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+            ],
           ),
-          const SizedBox(height: 12),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.history),
-                label: const Text('ดูย้อนหลัง 30 วัน'),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      trade.ticket,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                    ),
+                  ),
+                  MiddlemanTag(label: trade.status, color: trade.statusColor),
+                ],
               ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.summarize_outlined),
-                label: const Text('สร้างรายงานสรุป'),
+              const SizedBox(height: 8),
+              Text('เกษตรกร: ${trade.farmer}'),
+              Text('พื้นที่: ${trade.area}'),
+              Text('น้ำหนัก: ${trade.weight} • มูลค่า: ${trade.price}'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.factory_outlined, size: 18, color: MiddlemanPalette.primary),
+                  const SizedBox(width: 6),
+                  Text(trade.factory, style: const TextStyle(fontWeight: FontWeight.w600)),
+                ],
               ),
             ],
           ),
+        ),
+    ];
+  }
+
+  Widget _buildFactorySummary() {
+    final summaries = [
+      _FactorySummary('โรงงานชัยภูมิ', '12 เที่ยว', 'รวม 102 ตัน'),
+      _FactorySummary('โรงงานขอนแก่น', '9 เที่ยว', 'รวม 84 ตัน'),
+      _FactorySummary('โรงงานลพบุรี', '7 เที่ยว', 'รวม 64 ตัน'),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
+      child: Column(
+        children: [
+          for (final summary in summaries)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      summary.factory,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(summary.trips),
+                  const SizedBox(width: 12),
+                  Text(
+                    summary.volume,
+                    style: const TextStyle(fontWeight: FontWeight.w600, color: MiddlemanPalette.primary),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+
+  const _FilterChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F9FC),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFFE0E6EE)),
+      ),
+      child: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
     );
   }
 }
 
 class _TradeRecord {
-  final String date;
-  final String type;
-  final String partner;
-  final String lot;
+  final String ticket;
+  final String farmer;
+  final String area;
   final String weight;
   final String price;
-  final String margin;
+  final String factory;
+  final String status;
+  final Color statusColor;
 
   const _TradeRecord({
-    required this.date,
-    required this.type,
-    required this.partner,
-    required this.lot,
+    required this.ticket,
+    required this.farmer,
+    required this.area,
     required this.weight,
     required this.price,
-    required this.margin,
+    required this.factory,
+    required this.status,
+    required this.statusColor,
   });
 }
 
-class _TradeTypeChip extends StatelessWidget {
-  final String type;
+class _FactorySummary {
+  final String factory;
+  final String trips;
+  final String volume;
 
-  const _TradeTypeChip({required this.type});
-
-  @override
-  Widget build(BuildContext context) {
-    final isSell = type.contains('ขาย');
-    final color = isSell ? MiddlemanColors.green : MiddlemanColors.blue;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        type,
-        style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
+  const _FactorySummary(this.factory, this.trips, this.volume);
 }

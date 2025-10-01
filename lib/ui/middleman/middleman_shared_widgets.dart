@@ -2,57 +2,87 @@ import 'package:flutter/material.dart';
 
 import '../../component/base_scaffold.dart';
 
-class MiddlemanColors {
-  static const Color background = Color(0xFFEFF4FA);
-  static const Color orange = Color(0xFFF2662B);
-  static const Color green = Color(0xFF4DB749);
-  static const Color blue = Color(0xFF3C95B5);
-  static const Color purple = Color(0xFF7A5AF8);
-
-  static const List<BoxShadow> elevatedShadow = [
-    BoxShadow(
-      color: Color(0x14000000),
-      blurRadius: 16,
-      offset: Offset(0, 12),
-    ),
-  ];
+class MiddlemanPalette {
+  static const background = Color(0xFFEFF4FA);
+  static const primary = Color(0xFFE25E30);
+  static const success = Color(0xFF4DB749);
+  static const info = Color(0xFF3C95B5);
+  static const warning = Color(0xFFEF9C2C);
+  static const textSecondary = Color(0xFF6E7C8A);
 }
 
-class MiddlemanPageScaffold extends StatelessWidget {
+class MiddlemanScreenScaffold extends StatelessWidget {
   final String title;
   final String subtitle;
   final List<Widget> children;
-  final List<Widget>? badges;
-  final List<Widget>? trailing;
+  final List<Widget>? actionChips;
 
-  const MiddlemanPageScaffold({
+  const MiddlemanScreenScaffold({
     super.key,
     required this.title,
     required this.subtitle,
     required this.children,
-    this.badges,
-    this.trailing,
+    this.actionChips,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MiddlemanColors.background,
+      backgroundColor: MiddlemanPalette.background,
       body: BaseScaffold(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _PageHeader(
-              title: title,
-              subtitle: subtitle,
-              trailing: trailing,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(6),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            if (badges != null && badges!.isNotEmpty) ...[
+            if (actionChips != null && actionChips!.isNotEmpty) ...[
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: badges!,
+                children: actionChips!,
               ),
             ],
             const SizedBox(height: 20),
@@ -65,101 +95,111 @@ class MiddlemanPageScaffold extends StatelessWidget {
   }
 }
 
-class _PageHeader extends StatelessWidget {
+class MiddlemanSummaryCard extends StatelessWidget {
   final String title;
-  final String subtitle;
-  final List<Widget>? trailing;
+  final String value;
+  final IconData icon;
+  final Color color;
+  final String? caption;
 
-  const _PageHeader({
+  const MiddlemanSummaryCard({
+    super.key,
     required this.title,
-    required this.subtitle,
-    this.trailing,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.caption,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              shape: BoxShape.circle,
-            ),
-            padding: const EdgeInsets.all(6),
-            child: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 18,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (trailing != null && trailing!.isNotEmpty) ...[
-          const SizedBox(width: 12),
-          Row(children: trailing!),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
-      ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                    color: color,
+                  ),
+                ),
+                if (caption != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    caption!,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: MiddlemanPalette.textSecondary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class MiddlemanSectionHeader extends StatelessWidget {
+class MiddlemanSection extends StatelessWidget {
   final String title;
   final IconData? icon;
-  final Color? color;
   final Widget? trailing;
 
-  const MiddlemanSectionHeader(
-    this.title, {
+  const MiddlemanSection({
     super.key,
+    required this.title,
     this.icon,
-    this.color,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
-    final headerColor = color ?? MiddlemanColors.orange;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (icon != null)
             Container(
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: headerColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
+                color: MiddlemanPalette.primary.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(10),
               ),
               padding: const EdgeInsets.all(8),
-              child: Icon(icon, size: 18, color: headerColor),
+              child: Icon(icon, size: 18, color: MiddlemanPalette.primary),
             ),
           Expanded(
             child: Text(
@@ -177,51 +217,84 @@ class MiddlemanSectionHeader extends StatelessWidget {
   }
 }
 
-class MiddlemanCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-  final EdgeInsetsGeometry? margin;
-  final Gradient? gradient;
-  final Color? color;
-  final BoxBorder? border;
-  final List<BoxShadow>? shadow;
+class MiddlemanListTile extends StatelessWidget {
+  final IconData leadingIcon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final Widget? trailing;
 
-  const MiddlemanCard({
+  const MiddlemanListTile({
     super.key,
-    required this.child,
-    this.padding = const EdgeInsets.all(16),
-    this.margin,
-    this.gradient,
-    this.color,
-    this.border,
-    this.shadow,
+    required this.leadingIcon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: margin ?? const EdgeInsets.only(bottom: 16),
-      padding: padding,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: gradient == null ? (color ?? Colors.white) : null,
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(20),
-        border: border,
-        boxShadow: shadow ?? MiddlemanColors.elevatedShadow,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+        ],
       ),
-      child: child,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Icon(leadingIcon, color: iconColor),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: MiddlemanPalette.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (trailing != null) ...[
+            const SizedBox(width: 8),
+            trailing!,
+          ],
+        ],
+      ),
     );
   }
 }
 
-class MiddlemanPill extends StatelessWidget {
-  final IconData icon;
+class MiddlemanTag extends StatelessWidget {
   final String label;
   final Color color;
 
-  const MiddlemanPill({
+  const MiddlemanTag({
     super.key,
-    required this.icon,
     required this.label,
     required this.color,
   });
@@ -229,63 +302,75 @@ class MiddlemanPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(999),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
-            ),
-          ),
-        ],
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
       ),
     );
   }
 }
 
-class MiddlemanDividerLabel extends StatelessWidget {
+class MiddlemanActionButton extends StatelessWidget {
+  final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
-  const MiddlemanDividerLabel(this.label, {super.key});
+  const MiddlemanActionButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 1,
-            color: const Color(0xFFE0E0E0),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
-              color: Colors.black54,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 140,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x11000000),
+              blurRadius: 12,
+              offset: Offset(0, 6),
             ),
-          ),
+          ],
         ),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: const Color(0xFFE0E0E0),
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: MiddlemanPalette.primary.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: Icon(icon, color: MiddlemanPalette.primary),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

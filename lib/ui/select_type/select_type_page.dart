@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../component/sizeConfig.dart';
 import '../login/login_page.dart';
+import '../../util/user_role.dart';
 
 class SelectTypePage extends StatefulWidget {
   SelectTypePage({
@@ -47,7 +48,11 @@ class _SelectTypePageState extends State<SelectTypePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => LoginPage()),
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPage(
+                            role: UserRole.farmer,
+                          ),
+                        ),
                       );
                     },
                     child: Column(
@@ -76,9 +81,13 @@ class _SelectTypePageState extends State<SelectTypePage> {
                   // Spacer(),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => LoginPage()),
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPage(
+                            role: UserRole.middleman,
+                          ),
+                        ),
                       );
                     },
                     child: Column(

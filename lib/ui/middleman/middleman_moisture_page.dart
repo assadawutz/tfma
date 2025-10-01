@@ -1,149 +1,92 @@
 import 'package:flutter/material.dart';
 
-import '../../component/base_scaffold.dart';
+import 'middleman_shared_widgets.dart';
 
 class MiddlemanMoisturePage extends StatelessWidget {
   const MiddlemanMoisturePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEFF4FA),
-      body: BaseScaffold(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            _PageHeader(),
-            SizedBox(height: 20),
-            _GuidelineCard(),
-            SizedBox(height: 24),
-            _SectionTitle('ล็อตที่รอตรวจวัด'),
-            SizedBox(height: 12),
-            _WaitingBatchList(),
-            SizedBox(height: 24),
-            _SectionTitle('ผลการวัดล่าสุด'),
-            SizedBox(height: 12),
-            _MeasurementResultTable(),
-            SizedBox(height: 24),
-          ],
+    return MiddlemanPageScaffold(
+      title: 'วัดความชื้น',
+      subtitle: 'ควบคุมคุณภาพข้าวโพดให้ตรงตามเกณฑ์ก่อนเข้าเครื่องแปรรูป',
+      badges: const [
+        MiddlemanPill(
+          icon: Icons.device_thermostat,
+          label: 'เครื่องวัดพร้อมใช้งาน',
+          color: MiddlemanColors.blue,
         ),
-      ),
-    );
-  }
-}
-
-class _PageHeader extends StatelessWidget {
-  const _PageHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.white,
-            size: 18,
-          ),
+        MiddlemanPill(
+          icon: Icons.timer_outlined,
+          label: 'ต้องวัดภายใน 4 ชั่วโมง',
+          color: MiddlemanColors.orange,
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'วัดความชื้นผลผลิต',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'ติดตามการตรวจวัดและจัดลำดับล็อตที่ต้องดำเนินการ',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ],
-          ),
+      ],
+      children: const [
+        _MoistureLabStatusCard(),
+        MiddlemanSectionHeader(
+          'ล็อตที่รอวัดความชื้น',
+          icon: Icons.hourglass_bottom,
+          color: MiddlemanColors.blue,
         ),
+        _PendingLotList(),
+        MiddlemanSectionHeader(
+          'บันทึกผลการวัด',
+          icon: Icons.fact_check_outlined,
+          color: MiddlemanColors.orange,
+        ),
+        _MoistureFormCard(),
+        MiddlemanSectionHeader(
+          'สถิติวันนี้',
+          icon: Icons.query_stats,
+          color: MiddlemanColors.purple,
+        ),
+        _DailyMoistureStats(),
       ],
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  final String text;
-
-  const _SectionTitle(this.text);
+class _MoistureLabStatusCard extends StatelessWidget {
+  const _MoistureLabStatusCard();
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 16,
-      ),
-    );
-  }
-}
-
-class _GuidelineCard extends StatelessWidget {
-  const _GuidelineCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x15000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+    return MiddlemanCard(
+      gradient: const LinearGradient(
+        colors: [Color(0xFFE8F5E9), Color(0xFFD7F2DD)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFE8F8ED),
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
             ),
-            padding: const EdgeInsets.all(12),
-            child: const Icon(Icons.water_drop, color: Color(0xFF4DB749)),
+            padding: const EdgeInsets.all(18),
+            child: const Icon(Icons.science, color: MiddlemanColors.green, size: 28),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 18),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text(
-                  'แนวทางการวัดความชื้น',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  ),
+                  'สถานะห้องปฏิบัติการ',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 6),
                 Text(
-                  '1. นำตัวอย่าง 1 กิโลกรัมจากแต่ละกระสอบ \n2. อบแห้งที่ 130°C เป็นเวลา 30 นาที \n3. ปล่อยให้เย็นก่อนวัดด้วยเครื่องวัดความชื้น',
+                  'เครื่องวัดผ่านการคาลิเบรตเมื่อ 07:30 น. พร้อมใช้งานต่อเนื่องอีก 8 ชั่วโมง',
                   style: TextStyle(fontSize: 12, color: Colors.black54),
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'เกณฑ์ผ่านมาตรฐาน ≤ 14% หากสูงกว่านี้ต้องเข้าสู่กระบวนการอบแห้งก่อน',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF4DB749),
-                  ),
+                  'อุณหภูมิห้อง 25°C · ความชื้นสัมพัทธ์ 52% · พนักงานปฏิบัติการ 2 คน',
+                  style: TextStyle(fontSize: 12, color: Colors.black87),
                 ),
               ],
             ),
@@ -154,95 +97,40 @@ class _GuidelineCard extends StatelessWidget {
   }
 }
 
-class _WaitingBatchList extends StatelessWidget {
-  final List<Map<String, String>> waitingBatches = const [
-    {
-      'batch': '#QC1248',
-      'weight': '18,000 กก.',
-      'farmer': 'วิไลการเกษตร',
-      'priority': 'ด่วน',
-    },
-    {
-      'batch': '#QC1249',
-      'weight': '25,000 กก.',
-      'farmer': 'ชุมชนโนนสูงรวมใจ',
-      'priority': 'ปกติ',
-    },
-    {
-      'batch': '#QC1250',
-      'weight': '12,000 กก.',
-      'farmer': 'กลุ่มเกษตรกรบ้านใหม่',
-      'priority': 'ปกติ',
-    },
-  ];
-
-  const _WaitingBatchList();
+class _PendingLotList extends StatelessWidget {
+  const _PendingLotList();
 
   @override
   Widget build(BuildContext context) {
+    final lots = [
+      const _PendingLotItem(
+        lotCode: 'A1025',
+        farmer: 'วิไลการเกษตร',
+        weight: '30,000 กก.',
+        queueTime: 'ถึงคลัง 08:30 น.',
+        priority: 'ควรวัดก่อน 10:30 น.',
+      ),
+      const _PendingLotItem(
+        lotCode: 'A1026',
+        farmer: 'สมหมายไร่ข้าวโพด',
+        weight: '22,000 กก.',
+        queueTime: 'ถึงคลัง 09:10 น.',
+        priority: 'ควรวัดก่อน 11:10 น.',
+      ),
+      const _PendingLotItem(
+        lotCode: 'A1027',
+        farmer: 'ชุมชนโนนสูงรวมใจ',
+        weight: '18,500 กก.',
+        queueTime: 'ถึงคลัง 09:45 น.',
+        priority: 'ควรวัดก่อน 11:45 น.',
+      ),
+    ];
+
     return Column(
-      children: waitingBatches
+      children: lots
           .map(
-            (batch) => Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE0E0E0)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5F5FF),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.schedule, color: Color(0xFF3C95B5)),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          batch['batch']!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'เกษตรกร: ${batch['farmer']} • น้ำหนัก ${batch['weight']}',
-                          style: const TextStyle(fontSize: 12, color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: batch['priority'] == 'ด่วน'
-                          ? const Color(0xFFFFEBEE)
-                          : const Color(0xFFE8F8ED),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      batch['priority']!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: batch['priority'] == 'ด่วน'
-                            ? const Color(0xFFD84315)
-                            : const Color(0xFF4DB749),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            (lot) => MiddlemanCard(
+              child: lot,
             ),
           )
           .toList(),
@@ -250,132 +138,305 @@ class _WaitingBatchList extends StatelessWidget {
   }
 }
 
-class _MeasurementResultTable extends StatelessWidget {
-  final List<Map<String, String>> results = const [
-    {
-      'time': '09:30 น.',
-      'batch': '#QC1245',
-      'average': '12.5%',
-      'status': 'ผ่านเกณฑ์',
-    },
-    {
-      'time': '08:45 น.',
-      'batch': '#QC1246',
-      'average': '14.8%',
-      'status': 'ต้องอบเพิ่ม',
-    },
-    {
-      'time': '08:10 น.',
-      'batch': '#QC1247',
-      'average': '13.2%',
-      'status': 'ผ่านเกณฑ์',
-    },
-  ];
+class _PendingLotItem extends StatelessWidget {
+  final String lotCode;
+  final String farmer;
+  final String weight;
+  final String queueTime;
+  final String priority;
 
-  const _MeasurementResultTable();
-
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'ผ่านเกณฑ์':
-        return const Color(0xFF4DB749);
-      case 'ต้องอบเพิ่ม':
-        return const Color(0xFFF57C00);
-      default:
-        return Colors.black54;
-    }
-  }
+  const _PendingLotItem({
+    required this.lotCode,
+    required this.farmer,
+    required this.weight,
+    required this.queueTime,
+    required this.priority,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: MiddlemanColors.blue.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                'ล็อต $lotCode',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: MiddlemanColors.blue,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                farmer,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(Icons.scale, size: 14, color: Colors.black45),
+            const SizedBox(width: 4),
+            Text(weight, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+            const SizedBox(width: 16),
+            const Icon(Icons.schedule, size: 14, color: Colors.black45),
+            const SizedBox(width: 4),
+            Text(queueTime, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: MiddlemanColors.orange.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded,
+                  color: MiddlemanColors.orange, size: 16),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  priority,
+                  style: const TextStyle(fontSize: 12, color: MiddlemanColors.orange),
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text('เริ่มวัด'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MoistureFormCard extends StatelessWidget {
+  const _MoistureFormCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return MiddlemanCard(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: const [
+              Icon(Icons.edit_note, color: MiddlemanColors.orange),
+              SizedBox(width: 8),
+              Text(
+                'ฟอร์มบันทึกผล',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+              labelText: 'เลือกล็อตที่ต้องการบันทึก',
+              prefixIcon: Icon(Icons.inventory_2_outlined),
+            ),
+            items: const [
+              DropdownMenuItem(value: 'A1025', child: Text('ล็อต A1025 - วิไลการเกษตร')),
+              DropdownMenuItem(value: 'A1026', child: Text('ล็อต A1026 - สมหมายไร่ข้าวโพด')),
+              DropdownMenuItem(value: 'A1027', child: Text('ล็อต A1027 - ชุมชนโนนสูงรวมใจ')),
+            ],
+            onChanged: (_) {},
+            value: 'A1025',
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
               Expanded(
-                flex: 2,
-                child: Text(
-                  'เวลา',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'ค่าความชื้นเฉลี่ย (%)',
+                    prefixIcon: Icon(Icons.opacity),
+                  ),
+                  keyboardType: TextInputType.number,
+                  initialValue: '12.5',
                 ),
               ),
+              const SizedBox(width: 12),
               Expanded(
-                flex: 3,
-                child: Text(
-                  'ล็อต',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'ค่าเฉลี่ยความชื้น',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'สถานะ',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                  textAlign: TextAlign.right,
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'อุณหภูมิเครื่องอบ (°C)',
+                    prefixIcon: Icon(Icons.thermostat_outlined),
+                  ),
+                  keyboardType: TextInputType.number,
+                  initialValue: '55',
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          ...results.map(
-            (result) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(result['time']!),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      result['batch']!,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(result['average']!),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _statusColor(result['status']!).withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          result['status']!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: _statusColor(result['status']!),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'ผู้ตรวจสอบ',
+              prefixIcon: Icon(Icons.person_outline),
+            ),
+            initialValue: 'นางสาวศศิธร',
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            minLines: 2,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              labelText: 'หมายเหตุ',
+              hintText: 'ระบุจุดที่ต้องอบซ้ำหรือสภาพของเมล็ด',
+              prefixIcon: Icon(Icons.notes_outlined),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              FilledButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.save),
+                label: const Text('บันทึกผล'),
+              ),
+              const SizedBox(width: 12),
+              OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.picture_as_pdf_outlined),
+                label: const Text('ส่งรายงาน'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DailyMoistureStats extends StatelessWidget {
+  const _DailyMoistureStats();
+
+  @override
+  Widget build(BuildContext context) {
+    return MiddlemanCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ผลการวัด 6 ชั่วโมงล่าสุด',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          ),
+          const SizedBox(height: 12),
+          ...const [
+            _MoistureStatistic(
+              time: '09:50 น.',
+              lotCode: 'A1025',
+              value: 12.5,
+              status: 'ผ่านเกณฑ์',
+              color: MiddlemanColors.green,
+            ),
+            _MoistureStatistic(
+              time: '08:40 น.',
+              lotCode: 'A1024',
+              value: 14.2,
+              status: 'ต้องอบเพิ่ม',
+              color: MiddlemanColors.orange,
+            ),
+            _MoistureStatistic(
+              time: '07:30 น.',
+              lotCode: 'A1023',
+              value: 11.8,
+              status: 'พร้อมแปรรูป',
+              color: MiddlemanColors.purple,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MoistureStatistic extends StatelessWidget {
+  final String time;
+  final String lotCode;
+  final double value;
+  final String status;
+  final Color color;
+
+  const _MoistureStatistic({
+    required this.time,
+    required this.lotCode,
+    required this.value,
+    required this.status,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Center(
+              child: Text(
+                '${value.toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: color,
+                ),
               ),
             ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'ล็อต $lotCode',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  status,
+                  style: TextStyle(fontSize: 12, color: color),
+                ),
+                const SizedBox(height: 6),
+                LinearProgressIndicator(
+                  value: value / 20,
+                  minHeight: 6,
+                  backgroundColor: const Color(0xFFE5E5E5),
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            time,
+            style: const TextStyle(fontSize: 12, color: Colors.black54),
           ),
         ],
       ),

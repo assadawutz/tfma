@@ -1,304 +1,348 @@
 import 'package:flutter/material.dart';
 
-import '../../component/base_scaffold.dart';
+import 'middleman_shared_widgets.dart';
 
 class MiddlemanTradeListPage extends StatelessWidget {
   const MiddlemanTradeListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEFF4FA),
-      body: BaseScaffold(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            _PageHeader(),
-            SizedBox(height: 20),
-            _FilterSummaryCard(),
-            SizedBox(height: 24),
-            _SectionTitle('สรุปรายการรับซื้อ'),
-            SizedBox(height: 12),
-            _PurchaseTable(),
-            SizedBox(height: 24),
-            _SectionTitle('สรุปรายการขายออก'),
-            SizedBox(height: 12),
-            _SaleTable(),
-            SizedBox(height: 24),
-          ],
+    return MiddlemanPageScaffold(
+      title: 'รายการซื้อขายข้าวโพด',
+      subtitle: 'ติดตามต้นทุน รับรู้รายได้ และตรวจสอบประวัติการซื้อขายแบบละเอียด',
+      badges: const [
+        MiddlemanPill(
+          icon: Icons.bar_chart,
+          label: 'ยอดรับซื้อเดือนนี้ 420 ตัน',
+          color: MiddlemanColors.blue,
         ),
-      ),
-    );
-  }
-}
-
-class _PageHeader extends StatelessWidget {
-  const _PageHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.white,
-            size: 18,
-          ),
+        MiddlemanPill(
+          icon: Icons.payments_outlined,
+          label: 'กำไรขั้นต้น 18%',
+          color: MiddlemanColors.green,
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'รายการซื้อขายข้าวโพด',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'สรุปการรับซื้อจากเกษตรกรและการขายต่อโรงงานย้อนหลัง',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ],
-          ),
+      ],
+      children: const [
+        _TradeSummaryCard(),
+        MiddlemanSectionHeader(
+          'ตัวกรองข้อมูล',
+          icon: Icons.filter_list,
+          color: MiddlemanColors.orange,
         ),
+        _FilterFormCard(),
+        MiddlemanSectionHeader(
+          'ประวัติการซื้อขาย',
+          icon: Icons.receipt_long,
+          color: MiddlemanColors.blue,
+        ),
+        _TradeHistoryTable(),
       ],
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  final String text;
-
-  const _SectionTitle(this.text);
+class _TradeSummaryCard extends StatelessWidget {
+  const _TradeSummaryCard();
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 16,
+    return MiddlemanCard(
+      gradient: const LinearGradient(
+        colors: [Color(0xFFF4F9F5), Color(0xFFE5F6E6)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ภาพรวมผลการซื้อขาย',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: const [
+              _TradeStat(
+                icon: Icons.shopping_cart_outlined,
+                color: MiddlemanColors.blue,
+                label: 'ยอดรับซื้อวันนี้',
+                value: '72,500 กก.',
+              ),
+              _TradeStat(
+                icon: Icons.attach_money,
+                color: MiddlemanColors.green,
+                label: 'ยอดขายโรงงาน',
+                value: '1.85 ลบ.',
+              ),
+              _TradeStat(
+                icon: Icons.trending_up,
+                color: MiddlemanColors.orange,
+                label: 'อัตรากำไรเฉลี่ย',
+                value: '18%',
+              ),
+              _TradeStat(
+                icon: Icons.receipt_long,
+                color: MiddlemanColors.purple,
+                label: 'จำนวนรายการ',
+                value: '28 รายการ',
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-class _FilterSummaryCard extends StatelessWidget {
-  const _FilterSummaryCard();
+class _TradeStat extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+
+  const _TradeStat({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 150,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+        boxShadow: MiddlemanColors.elevatedShadow,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFE5F5FF),
+              color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.filter_list, color: Color(0xFF283593)),
+            padding: const EdgeInsets.all(10),
+            child: Icon(icon, color: color),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'สรุปช่วงเวลา 1-30 มิ.ย. 2568',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+          const SizedBox(height: 12),
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterFormCard extends StatelessWidget {
+  const _FilterFormCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return MiddlemanCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.search, color: MiddlemanColors.orange),
+              SizedBox(width: 8),
+              Text(
+                'ปรับช่วงเวลาหรือประเภทธุรกรรม',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'ค้นหาเกษตรกร/โรงงาน',
+                    prefixIcon: Icon(Icons.manage_search),
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  'รับซื้อ 48 รายการ รวม 612,000 กก. • ขายออก 22 รายการ รวม 588,000 กก.',
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    labelText: 'ประเภท',
+                    prefixIcon: Icon(Icons.category_outlined),
+                  ),
+                  value: 'รับซื้อ',
+                  onChanged: (_) {},
+                  items: const [
+                    DropdownMenuItem(value: 'รับซื้อ', child: Text('รับซื้อจากเกษตรกร')),
+                    DropdownMenuItem(value: 'ขาย', child: Text('ขายให้โรงงาน')),
+                  ],
                 ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'วันที่เริ่มต้น',
+                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  ),
+                  initialValue: '10 มิ.ย. 2568',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'วันที่สิ้นสุด',
+                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  ),
+                  initialValue: '16 มิ.ย. 2568',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              FilledButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.refresh),
+                label: const Text('ใช้ตัวกรอง'),
+              ),
+              const SizedBox(width: 12),
+              TextButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.download_outlined),
+                label: const Text('ส่งออกเป็น Excel'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TradeHistoryTable extends StatelessWidget {
+  const _TradeHistoryTable();
+
+  @override
+  Widget build(BuildContext context) {
+    final records = const [
+      _TradeRecord(
+        date: '16 มิ.ย. 2568',
+        type: 'ขายให้โรงงาน',
+        partner: 'ไทยฟีด - ขอนแก่น',
+        lot: 'A1025',
+        weight: '30,000 กก.',
+        price: '1,200,000 บ.',
+        margin: '+12.4%',
+      ),
+      _TradeRecord(
+        date: '16 มิ.ย. 2568',
+        type: 'รับซื้อ',
+        partner: 'วิไลการเกษตร',
+        lot: 'A1025',
+        weight: '30,000 กก.',
+        price: '252,000 บ.',
+        margin: '-',
+      ),
+      _TradeRecord(
+        date: '15 มิ.ย. 2568',
+        type: 'ขายให้โรงงาน',
+        partner: 'ไทยฟีด - ชัยภูมิ',
+        lot: 'A1024',
+        weight: '22,000 กก.',
+        price: '860,000 บ.',
+        margin: '+10.8%',
+      ),
+      _TradeRecord(
+        date: '15 มิ.ย. 2568',
+        type: 'รับซื้อ',
+        partner: 'สมหมายไร่ข้าวโพด',
+        lot: 'A1024',
+        weight: '22,000 กก.',
+        price: '184,800 บ.',
+        margin: '-',
+      ),
+    ];
+
+    return MiddlemanCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('วันที่')),
+                DataColumn(label: Text('ประเภท')),
+                DataColumn(label: Text('คู่ค้า/เกษตรกร')),
+                DataColumn(label: Text('ล็อต')),
+                DataColumn(label: Text('น้ำหนัก')),
+                DataColumn(label: Text('มูลค่า')),
+                DataColumn(label: Text('กำไร/ส่วนต่าง')),
               ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF283593),
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Text(
-              'ปรับช่วงเวลา',
-              style: TextStyle(color: Colors.white, fontSize: 13),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PurchaseTable extends StatelessWidget {
-  final List<Map<String, String>> purchases = const [
-    {
-      'date': '20 มิ.ย. 2568',
-      'farmer': 'วิไลการเกษตร',
-      'weight': '30,000 กก.',
-      'price': '6.80 บาท/กก.',
-      'status': 'ส่งต่อ QC',
-    },
-    {
-      'date': '19 มิ.ย. 2568',
-      'farmer': 'สมหมายไร่ข้าวโพด',
-      'weight': '22,000 กก.',
-      'price': '6.75 บาท/กก.',
-      'status': 'รอแปรรูป',
-    },
-    {
-      'date': '19 มิ.ย. 2568',
-      'farmer': 'ชุมชนโนนสูงรวมใจ',
-      'weight': '18,500 กก.',
-      'price': '6.60 บาท/กก.',
-      'status': 'พร้อมขาย',
-    },
-  ];
-
-  const _PurchaseTable();
-
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'ส่งต่อ QC':
-        return const Color(0xFF3C95B5);
-      case 'รอแปรรูป':
-        return const Color(0xFFF9A825);
-      case 'พร้อมขาย':
-        return const Color(0xFF4DB749);
-      default:
-        return Colors.black54;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: const [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'วันที่',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  'เกษตรกร',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'น้ำหนัก',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'ราคา',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'สถานะ',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                  textAlign: TextAlign.right,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...purchases.map(
-            (purchase) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(purchase['date']!),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      purchase['farmer']!,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(purchase['weight']!),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(purchase['price']!),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              _statusColor(purchase['status']!).withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          purchase['status']!,
+              rows: records
+                  .map(
+                    (record) => DataRow(
+                      cells: [
+                        DataCell(Text(record.date)),
+                        DataCell(_TradeTypeChip(type: record.type)),
+                        DataCell(Text(record.partner)),
+                        DataCell(Text(record.lot)),
+                        DataCell(Text(record.weight)),
+                        DataCell(Text(record.price)),
+                        DataCell(Text(
+                          record.margin,
                           style: TextStyle(
-                            fontSize: 12,
+                            color: record.margin.startsWith('+')
+                                ? MiddlemanColors.green
+                                : Colors.black87,
                             fontWeight: FontWeight.w600,
-                            color: _statusColor(purchase['status']!),
                           ),
-                        ),
-                      ),
+                        )),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+                  )
+                  .toList(),
             ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              TextButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.history),
+                label: const Text('ดูย้อนหลัง 30 วัน'),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.summarize_outlined),
+                label: const Text('สร้างรายงานสรุป'),
+              ),
+            ],
           ),
         ],
       ),
@@ -306,120 +350,48 @@ class _PurchaseTable extends StatelessWidget {
   }
 }
 
-class _SaleTable extends StatelessWidget {
-  final List<Map<String, String>> sales = const [
-    {
-      'date': '20 มิ.ย. 2568',
-      'factory': 'โรงงาน ABC Agro',
-      'weight': '24,500 กก.',
-      'price': '8.10 บาท/กก.',
-      'batch': '#MM240620A',
-    },
-    {
-      'date': '19 มิ.ย. 2568',
-      'factory': 'โรงงาน ThaiFeed',
-      'weight': '20,000 กก.',
-      'price': '8.05 บาท/กก.',
-      'batch': '#MM240619C',
-    },
-    {
-      'date': '18 มิ.ย. 2568',
-      'factory': 'โรงงาน CPF Korat',
-      'weight': '18,000 กก.',
-      'price': '8.00 บาท/กก.',
-      'batch': '#MM240619B',
-    },
-  ];
+class _TradeRecord {
+  final String date;
+  final String type;
+  final String partner;
+  final String lot;
+  final String weight;
+  final String price;
+  final String margin;
 
-  const _SaleTable();
+  const _TradeRecord({
+    required this.date,
+    required this.type,
+    required this.partner,
+    required this.lot,
+    required this.weight,
+    required this.price,
+    required this.margin,
+  });
+}
+
+class _TradeTypeChip extends StatelessWidget {
+  final String type;
+
+  const _TradeTypeChip({required this.type});
 
   @override
   Widget build(BuildContext context) {
+    final isSell = type.contains('ขาย');
+    final color = isSell ? MiddlemanColors.green : MiddlemanColors.blue;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(30),
       ),
-      child: Column(
-        children: [
-          Row(
-            children: const [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'วันที่',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  'โรงงาน',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'น้ำหนัก',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'ราคา',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  'ล็อตสินค้า',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                  textAlign: TextAlign.right,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...sales.map(
-            (sale) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(sale['date']!),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      sale['factory']!,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(sale['weight']!),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(sale['price']!),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      sale['batch']!,
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+      child: Text(
+        type,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
       ),
     );
   }

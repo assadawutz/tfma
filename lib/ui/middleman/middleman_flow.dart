@@ -75,7 +75,7 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     builder: (_) => const MiddlemanMoisturePage(),
   ),
   MiddlemanFlowStep(
-    icon: Icons.factory,
+    icon: Icons.settings_suggest_outlined,
     color: MiddlemanPalette.warning,
     title: 'แปรรูปเป็นข้าวโพดเม็ด',
     description: 'ติดตามสถานะอบแห้ง คัดแยก และแพ็กกิ้งก่อนนำส่งโรงงาน',

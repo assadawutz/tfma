@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
 class NextButton extends StatelessWidget {
-  final Widget nextPage;
+  final Widget? nextPage;
+  final VoidCallback? onPressed;
   final String label;
   final EdgeInsetsGeometry margin;
   final Color color;
 
   const NextButton({
     super.key,
-    required this.nextPage,
+    this.nextPage,
+    this.onPressed,
     this.label = 'ถัดไป',
     this.margin = const EdgeInsets.fromLTRB(16, 0, 16, 24),
     this.color = Colors.grey,
-  });
+  }) : assert(nextPage != null || onPressed != null,
+            'Either nextPage or onPressed must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +34,16 @@ class NextButton extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => nextPage),
-              );
+              if (onPressed != null) {
+                onPressed!();
+                return;
+              }
+              if (nextPage != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => nextPage!),
+                );
+              }
             },
             child: Text(
               label,

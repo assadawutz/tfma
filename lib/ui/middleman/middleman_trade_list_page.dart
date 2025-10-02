@@ -27,7 +27,7 @@ class MiddlemanTradeListPage extends StatelessWidget {
         ..._buildTradeCards(),
         const MiddlemanSection(
           title: 'สรุปตามโรงงานปลายทาง',
-          icon: Icons.factory_outlined,
+          icon: Icons.home_work_outlined,
         ),
         _buildFactorySummary(),
       ],
@@ -156,7 +156,7 @@ class MiddlemanTradeListPage extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.factory_outlined, size: 18, color: MiddlemanPalette.primary),
+                  const Icon(Icons.home_work_outlined, size: 18, color: MiddlemanPalette.primary),
                   const SizedBox(width: 6),
                   Text(trade.factory, style: const TextStyle(fontWeight: FontWeight.w600)),
                 ],

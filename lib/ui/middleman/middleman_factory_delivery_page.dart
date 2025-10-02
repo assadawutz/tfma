@@ -36,7 +36,7 @@ class MiddlemanFactoryDeliveryPage extends StatelessWidget {
 
   Widget _buildDeliveryOverview() {
     final stats = [
-      _DeliveryStat('ปลายทาง 3 โรงงาน', Icons.factory_outlined, MiddlemanPalette.primary,
+      _DeliveryStat('ปลายทาง 3 โรงงาน', Icons.home_work_outlined, MiddlemanPalette.primary,
           'ชัยภูมิ, ขอนแก่น, ลพบุรี'),
       _DeliveryStat('ปริมาณพร้อมส่ง 42 ตัน', Icons.inventory_2_outlined, MiddlemanPalette.info,
           'แบ่งเป็น 1,400 กระสอบ'),

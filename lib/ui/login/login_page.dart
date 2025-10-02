@@ -81,16 +81,11 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  Widget onLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RegisterPage(role: widget.role),
-        ),
-      );
-    }
-    return Container(); // Placeholder to satisfy return type
+  @override
+  void dispose() {
+    _farmerIdController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -98,9 +93,17 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       bottomNavigationBar: NextButton(
         color: AppColors.green,
-        // onPressed: onLogin(),
         label: 'เข้าสู่ระบบ',
-        nextPage: RegisterPage(role: widget.role),
+        onPressed: () {
+          if (_formKey.currentState?.validate() ?? false) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegisterPage(role: widget.role),
+              ),
+            );
+          }
+        },
       ),
       body: SingleChildScrollView(
         child: Form(

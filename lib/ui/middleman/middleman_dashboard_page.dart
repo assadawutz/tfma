@@ -40,7 +40,7 @@ class MiddlemanDashboardPage extends StatelessWidget {
               const MiddlemanSummaryCard(
                 title: 'กำลังแปรรูป',
                 value: '22 ตัน',
-                icon: Icons.factory_outlined,
+                icon: Icons.settings_suggest_outlined,
                 color: MiddlemanPalette.warning,
                 caption: 'เตรียมพร้อมสำหรับจัดส่งรอบเย็น',
               ),

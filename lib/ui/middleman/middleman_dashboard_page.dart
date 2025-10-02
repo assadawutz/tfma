@@ -16,50 +16,48 @@ class _MiddlemanDashboardPageState extends State<MiddlemanDashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEFF4FA),
-      body: BaseScaffold(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new,
-                    color: Colors.white,
-                  ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
                 ),
-                const SizedBox(width: 12),
-                const Text(
-                  'คลังพ่อค้าคนกลาง',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'คลังพ่อค้าคนกลาง',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildSummaryCard(),
-            const SizedBox(height: 16),
-            _buildQuickStats(),
-            const SizedBox(height: 16),
-            _buildQuickActions(),
-            const SizedBox(height: 20),
-            _buildToggle(),
-            const SizedBox(height: 16),
-            Text(
-              showPurchases ? 'คำสั่งรับซื้อวันนี้' : 'การขนส่งออกจากคลัง',
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            showPurchases ? _buildPurchaseTable() : _buildLogisticsTable(),
-            const SizedBox(height: 20),
-            _buildAlertSection(),
-            const SizedBox(height: 24),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildSummaryCard(),
+          const SizedBox(height: 16),
+          _buildQuickStats(),
+          const SizedBox(height: 16),
+          _buildQuickActions(),
+          const SizedBox(height: 20),
+          _buildToggle(),
+          const SizedBox(height: 16),
+          Text(
+            showPurchases ? 'คำสั่งรับซื้อวันนี้' : 'การขนส่งออกจากคลัง',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          showPurchases ? _buildPurchaseTable() : _buildLogisticsTable(),
+          const SizedBox(height: 20),
+          _buildAlertSection(),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
@@ -364,9 +362,8 @@ class _MiddlemanDashboardPageState extends State<MiddlemanDashboardPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
-                        color: showPurchases
-                            ? Colors.white
-                            : Colors.grey.shade600,
+                        color:
+                            showPurchases ? Colors.white : Colors.grey.shade600,
                       ),
                     ),
                   ),

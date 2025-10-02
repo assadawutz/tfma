@@ -3,9 +3,13 @@ import 'package:tfma/ui/home/home.dart';
 
 import '../../component/next_button.dart';
 import '../../util/color.dart';
+import '../../util/user_role.dart';
+import '../middleman/middleman_dashboard_page.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
+  final UserRole role;
+
+  const RegisterPage({super.key, required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +18,16 @@ class RegisterPage extends StatelessWidget {
       borderSide: const BorderSide(color: Colors.black12),
     );
 
+    final bool isFarmer = role == UserRole.farmer;
+
+    final Widget destinationPage = isFarmer
+        ? HomePage(routeName: '')
+        : const MiddlemanDashboardPage();
+
     return Scaffold(
       bottomNavigationBar: NextButton(
         color: AppColors.green,
-        nextPage: HomePage(
-          routeName: '',
-        ),
+        nextPage: destinationPage,
         // ✅ ใส่ Widget ปลายทางที่ต้องการ push
         label: 'ถัดไป',
       ),
@@ -39,7 +47,7 @@ class RegisterPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "เริ่มสมัครใช้งาน",
+                  isFarmer ? "เริ่มสมัครใช้งาน" : 'สมัครใช้งานพ่อค้าคนกลาง',
                   style: const TextStyle(
                     fontFamily: "Kanit",
                     fontSize: 28,
@@ -53,7 +61,7 @@ class RegisterPage extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(left: 16),
                   child: Text(
-                    "เลขบัตรประชาชน",
+                    isFarmer ? "เลขบัตรประชาชน" : 'เลขประจำตัวผู้เสียภาษี',
                     style: const TextStyle(
                       fontFamily: "Kanit",
                       fontSize: 15,
@@ -67,7 +75,9 @@ class RegisterPage extends StatelessWidget {
                 SizedBox(height: 8),
                 TextField(
                   decoration: InputDecoration(
-                    hintText: 'เลขบัตรประชาชน 13 หลัก',
+                    hintText: isFarmer
+                        ? 'เลขบัตรประชาชน 13 หลัก'
+                        : 'เลขประจำตัวผู้เสียภาษี 13 หลัก',
                     hintStyle: TextStyle(color: AppColors.subtitle),
                     border: outlineBorder,
                     enabledBorder: outlineBorder,
@@ -84,7 +94,7 @@ class RegisterPage extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(left: 16),
                   child: Text(
-                    'เบอร์มือถือ',
+                    isFarmer ? 'เบอร์มือถือ' : 'เลขที่ใบอนุญาตรับซื้อ',
                     style: const TextStyle(
                       fontFamily: "Kanit",
                       fontSize: 15,
@@ -97,9 +107,10 @@ class RegisterPage extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 TextField(
-                  obscureText: true,
                   decoration: InputDecoration(
-                    hintText: 'เบอร์มือถือที่ใช้บนอุปกรณ์นี้',
+                    hintText: isFarmer
+                        ? 'เบอร์มือถือที่ใช้บนอุปกรณ์นี้'
+                        : 'ระบุเลขที่ใบอนุญาตที่ออกโดยจังหวัด',
                     hintStyle: TextStyle(color: AppColors.subtitle),
                     border: outlineBorder,
                     enabledBorder: outlineBorder,
@@ -113,8 +124,46 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                if (!isFarmer)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 16),
+                        child: const Text(
+                          'ช่องทางติดต่อหลัก',
+                          style: TextStyle(
+                            fontFamily: "Kanit",
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff111111),
+                            height: 20 / 13,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'อีเมลหรือเบอร์ผู้ประสานงานหลัก',
+                          hintStyle: TextStyle(color: AppColors.subtitle),
+                          border: outlineBorder,
+                          enabledBorder: outlineBorder,
+                          focusedBorder: outlineBorder,
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 Text(
-                  'ชื่อผู้ใช้งานและรหัสผ่านใช้เลขรหัสทะเบียนเกษตรกรบน\nสมุดทะเบียนเกษตร 12 หลัก (เล่มเขียว)',
+                  isFarmer
+                      ? 'ชื่อผู้ใช้งานและรหัสผ่านใช้เลขรหัสทะเบียนเกษตรกรบน\nสมุดทะเบียนเกษตร 12 หลัก (เล่มเขียว)'
+                      : 'โปรดเตรียมข้อมูลเอกสารการรับซื้อและข้อมูลการติดต่อผู้รวบรวม\nเพื่อความถูกต้องก่อนเริ่มใช้งานระบบ',
                   textAlign: TextAlign.start,
                   style: TextStyle(
                     color: Colors.green,

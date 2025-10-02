@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'middleman_alerts_page.dart';
-import 'middleman_factory_delivery_page.dart';
-import 'middleman_moisture_page.dart';
-import 'middleman_processing_page.dart';
-import 'middleman_purchase_page.dart';
+import 'middleman_flow.dart';
 import 'middleman_shared_widgets.dart';
-import 'middleman_trade_list_page.dart';
 
 class MiddlemanDashboardPage extends StatelessWidget {
   const MiddlemanDashboardPage({super.key});
@@ -72,46 +67,17 @@ class MiddlemanDashboardPage extends StatelessWidget {
           title: 'ขั้นตอนงานวันนี้',
           icon: Icons.flag_outlined,
         ),
-        MiddlemanListTile(
-          leadingIcon: Icons.qr_code_scanner,
-          iconColor: MiddlemanPalette.primary,
-          title: 'รับซื้อจากเกษตรกร',
-          subtitle: 'สแกนคิวอาร์โค้ดเพื่อตัดโควต้าและสร้างใบรับซื้อ',
-          trailing: TextButton(
-            onPressed: () => _open(context, const MiddlemanPurchasePage()),
-            child: const Text('เริ่มรับซื้อ'),
+        for (final step in middlemanFlowSteps.where((step) => step.isCoreStep))
+          MiddlemanListTile(
+            leadingIcon: step.icon,
+            iconColor: step.color,
+            title: step.title,
+            subtitle: step.description,
+            trailing: TextButton(
+              onPressed: () => step.openPage(context),
+              child: Text(step.actionLabel),
+            ),
           ),
-        ),
-        MiddlemanListTile(
-          leadingIcon: Icons.water_drop,
-          iconColor: MiddlemanPalette.info,
-          title: 'วัดความชื้น',
-          subtitle: 'ตรวจสอบความชื้นแปลงล่าสุดก่อนนำไปแปรรูป',
-          trailing: TextButton(
-            onPressed: () => _open(context, const MiddlemanMoisturePage()),
-            child: const Text('บันทึกค่า'),
-          ),
-        ),
-        MiddlemanListTile(
-          leadingIcon: Icons.factory,
-          iconColor: MiddlemanPalette.warning,
-          title: 'แปรรูปเป็นข้าวโพดเม็ด',
-          subtitle: 'ติดตามสถานะอบแห้ง คัดแยก และแพ็กกิ้ง',
-          trailing: TextButton(
-            onPressed: () => _open(context, const MiddlemanProcessingPage()),
-            child: const Text('เปิดดูงาน'),
-          ),
-        ),
-        MiddlemanListTile(
-          leadingIcon: Icons.local_shipping,
-          iconColor: MiddlemanPalette.success,
-          title: 'จัดส่งโรงงาน',
-          subtitle: 'ตรวจสอบปลายทางและสแกนคิวอาร์โค้ดของโรงงานปลายทาง',
-          trailing: TextButton(
-            onPressed: () => _open(context, const MiddlemanFactoryDeliveryPage()),
-            child: const Text('วางแผนรอบ'),
-          ),
-        ),
         const MiddlemanSection(
           title: 'เมนูด่วน',
           icon: Icons.dashboard_customize_outlined,
@@ -120,31 +86,12 @@ class MiddlemanDashboardPage extends StatelessWidget {
           spacing: 12,
           runSpacing: 12,
           children: [
-            MiddlemanActionButton(
-              icon: Icons.qr_code_scanner,
-              label: 'สแกนคิวอาร์รับซื้อ',
-              onTap: () => _open(context, const MiddlemanPurchasePage()),
-            ),
-            MiddlemanActionButton(
-              icon: Icons.assignment_outlined,
-              label: 'บันทึกความชื้น',
-              onTap: () => _open(context, const MiddlemanMoisturePage()),
-            ),
-            MiddlemanActionButton(
-              icon: Icons.factory_outlined,
-              label: 'ตรวจงานแปรรูป',
-              onTap: () => _open(context, const MiddlemanProcessingPage()),
-            ),
-            MiddlemanActionButton(
-              icon: Icons.receipt_long,
-              label: 'ประวัติซื้อขาย',
-              onTap: () => _open(context, const MiddlemanTradeListPage()),
-            ),
-            MiddlemanActionButton(
-              icon: Icons.notification_important_outlined,
-              label: 'แจ้งเตือนการเผา',
-              onTap: () => _open(context, const MiddlemanAlertsPage()),
-            ),
+            for (final step in middlemanFlowSteps)
+              MiddlemanActionButton(
+                icon: step.icon,
+                label: step.shortcutLabel ?? step.title,
+                onTap: () => step.openPage(context),
+              ),
           ],
         ),
         const MiddlemanSection(
@@ -234,9 +181,4 @@ class MiddlemanDashboardPage extends StatelessWidget {
     );
   }
 
-  static void _open(BuildContext context, Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
 }

@@ -15,13 +15,19 @@ class MiddlemanDashboardPage extends StatelessWidget {
         MiddlemanTag(label: 'สต็อกพร้อมขาย 180 ตัน', color: MiddlemanPalette.success),
         MiddlemanTag(label: 'ล็อตรอตรวจ 5 รายการ', color: MiddlemanPalette.info),
         MiddlemanTag(label: 'แจ้งเตือน 2 รายการ', color: MiddlemanPalette.warning),
+        MiddlemanTag(label: 'ยอดคงเหลือสุทธิ ฿1.28 ลบ.', color: MiddlemanPalette.primary),
       ],
       children: [
         LayoutBuilder(
           builder: (context, constraints) {
-            final itemWidth = constraints.maxWidth > 600
-                ? (constraints.maxWidth - 24) / 2
-                : constraints.maxWidth;
+            final columns = constraints.maxWidth >= 960
+                ? 3
+                : constraints.maxWidth >= 620
+                    ? 2
+                    : 1;
+            const spacing = 12.0;
+            final itemWidth =
+                columns == 1 ? constraints.maxWidth : (constraints.maxWidth - spacing * (columns - 1)) / columns;
             final summaries = [
               const MiddlemanSummaryCard(
                 title: 'รับซื้อวันนี้',
@@ -45,17 +51,31 @@ class MiddlemanDashboardPage extends StatelessWidget {
                 caption: 'เตรียมพร้อมสำหรับจัดส่งรอบเย็น',
               ),
               const MiddlemanSummaryCard(
+                title: 'พื้นที่จัดเก็บคงเหลือ',
+                value: '45 %',
+                icon: Icons.inventory_2_outlined,
+                color: MiddlemanPalette.info,
+                caption: 'Silo #1 ใกล้เต็ม ควรย้ายเข้าคลังสำรอง',
+              ),
+              const MiddlemanSummaryCard(
                 title: 'ส่งมอบสำเร็จ',
                 value: '4 เที่ยว',
                 icon: Icons.local_shipping_outlined,
                 color: MiddlemanPalette.success,
                 caption: 'โรงงานชัยภูมิ, ขอนแก่น, ลพบุรี',
               ),
+              const MiddlemanSummaryCard(
+                title: 'ยอดคงเหลือสุทธิ',
+                value: '฿ 1.28 ลบ.',
+                icon: Icons.account_balance_wallet_outlined,
+                color: MiddlemanPalette.primary,
+                caption: 'หลังหักค่าใช้จ่ายและเงินที่ต้องจ่าย',
+              ),
             ];
 
             return Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: spacing,
+              runSpacing: spacing,
               children: [
                 for (final card in summaries)
                   SizedBox(width: itemWidth, child: card),
@@ -82,17 +102,33 @@ class MiddlemanDashboardPage extends StatelessWidget {
           title: 'เมนูด่วน',
           icon: Icons.dashboard_customize_outlined,
         ),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            for (final step in middlemanFlowSteps)
-              MiddlemanActionButton(
-                icon: step.icon,
-                label: step.shortcutLabel ?? step.title,
-                onTap: () => step.openPage(context),
-              ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final columns = constraints.maxWidth >= 960
+                ? 3
+                : constraints.maxWidth >= 620
+                    ? 2
+                    : 1;
+            const spacing = 12.0;
+            final itemWidth =
+                columns == 1 ? constraints.maxWidth : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final step in middlemanFlowSteps)
+                  SizedBox(
+                    width: itemWidth,
+                    child: MiddlemanActionButton(
+                      icon: step.icon,
+                      label: step.shortcutLabel ?? step.title,
+                      description: step.shortcutDescription,
+                      onTap: () => step.openPage(context),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         const MiddlemanSection(
           title: 'ความเคลื่อนไหวล่าสุด',
@@ -120,10 +156,22 @@ class MiddlemanDashboardPage extends StatelessWidget {
         detail: 'ความชื้น 13.5% โดยเครื่องวัด Silo #2',
       ),
       (
+        icon: Icons.inventory_2,
+        color: MiddlemanPalette.info,
+        title: 'ย้ายล็อต 230510-C เข้าคลัง',
+        detail: 'Silo #2 ปรับสมดุลเหลือความจุ 68%',
+      ),
+      (
         icon: Icons.fireplace,
         color: MiddlemanPalette.warning,
         title: 'แจ้งเตือนการเผาแปลง',
         detail: 'พบควันในตำบลหนองสองห้อง แจ้งเจ้าหน้าที่ตรวจสอบ',
+      ),
+      (
+        icon: Icons.payments,
+        color: MiddlemanPalette.success,
+        title: 'จ่ายเงินให้สหกรณ์บ้านหนองโน',
+        detail: 'โอนจำนวน 185,000 บาท สำเร็จเมื่อ 14:10 น.',
       ),
     ];
 

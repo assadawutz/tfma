@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'middleman_alerts_page.dart';
 import 'middleman_factory_delivery_page.dart';
+import 'middleman_finance_page.dart';
+import 'middleman_inventory_page.dart';
 import 'middleman_moisture_page.dart';
 import 'middleman_processing_page.dart';
 import 'middleman_purchase_page.dart';
@@ -18,6 +20,7 @@ class MiddlemanFlowStep {
     required this.description,
     required this.actionLabel,
     this.shortcutLabel,
+    this.shortcutDescription,
     this.isCoreStep = true,
     required this.builder,
   });
@@ -39,6 +42,9 @@ class MiddlemanFlowStep {
 
   /// Optional label used for quick actions; falls back to [title] when null.
   final String? shortcutLabel;
+
+  /// Short explanation that appears inside the quick-action card.
+  final String? shortcutDescription;
 
   /// Flag that marks whether the step is part of the main operational flow.
   final bool isCoreStep;
@@ -63,6 +69,7 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     description: 'สแกนคิวอาร์โค้ดตัดโควต้า สร้างใบรับซื้อ และเชื่อมโยงข้อมูลฟาร์ม',
     actionLabel: 'เริ่มรับซื้อ',
     shortcutLabel: 'สแกนคิวอาร์รับซื้อ',
+    shortcutDescription: 'สแกนโควต้าจากมือถือเกษตรกรและพิมพ์ใบรับซื้อได้ทันที',
     builder: (_) => const MiddlemanPurchasePage(),
   ),
   MiddlemanFlowStep(
@@ -72,6 +79,7 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     description: 'บันทึกค่าความชื้นจากเครื่องมือและปักธงล็อตที่ต้องอบแห้งซ้ำ',
     actionLabel: 'บันทึกค่า',
     shortcutLabel: 'บันทึกความชื้น',
+    shortcutDescription: 'เทียบเกณฑ์โรงงานและระบุผู้ตรวจสอบในแต่ละล็อตได้',
     builder: (_) => const MiddlemanMoisturePage(),
   ),
   MiddlemanFlowStep(
@@ -81,7 +89,18 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     description: 'ติดตามสถานะอบแห้ง คัดแยก และแพ็กกิ้งก่อนนำส่งโรงงาน',
     actionLabel: 'ตรวจงาน',
     shortcutLabel: 'ตรวจงานแปรรูป',
+    shortcutDescription: 'เช็กงานอบแห้ง แพ็กกิ้ง และคิวรถยกในแต่ละโรงเรือน',
     builder: (_) => const MiddlemanProcessingPage(),
+  ),
+  MiddlemanFlowStep(
+    icon: Icons.inventory_2_outlined,
+    color: MiddlemanPalette.info,
+    title: 'จัดการคลังสินค้า',
+    description: 'ดูปริมาณคงเหลือ พื้นที่ว่าง และเฝ้าระวังล็อตที่ต้องหมุนเวียน',
+    actionLabel: 'ตรวจคลัง',
+    shortcutLabel: 'คลังสินค้า',
+    shortcutDescription: 'ดูพื้นที่ว่าง, อุณหภูมิ และล็อตที่ต้องพลิกสต็อก',
+    builder: (_) => const MiddlemanInventoryPage(),
   ),
   MiddlemanFlowStep(
     icon: Icons.local_shipping,
@@ -90,6 +109,7 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     description: 'วางแผนรอบรถ ตรวจสอบปลายทาง และเช็กอินด้วยคิวอาร์โค้ดโรงงาน',
     actionLabel: 'วางแผนรอบ',
     shortcutLabel: 'ติดตามการจัดส่ง',
+    shortcutDescription: 'ดูเส้นทางรถบรรทุกและเวลาคาดว่าจะถึงโรงงาน',
     builder: (_) => const MiddlemanFactoryDeliveryPage(),
   ),
   MiddlemanFlowStep(
@@ -99,6 +119,7 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     description: 'เฝ้าระวังจุดความร้อนและแจ้งเตือนเกษตรกรให้หยุดการเผา',
     actionLabel: 'เปิดแจ้งเตือน',
     shortcutLabel: 'แจ้งเตือนการเผา',
+    shortcutDescription: 'ติดตามแจ้งเตือนจากดาวเทียมและล็อกตำแหน่งแปลงที่เฝ้า',
     isCoreStep: false,
     builder: (_) => const MiddlemanAlertsPage(),
   ),
@@ -109,7 +130,19 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     description: 'ทบทวนประวัติรับซื้อ-ส่งมอบ พร้อมหลักฐานย้อนกลับถึงเกษตรกร',
     actionLabel: 'ดูรายการ',
     shortcutLabel: 'ประวัติซื้อขาย',
+    shortcutDescription: 'ตรวจย้อนหลังได้ทั้งฝั่งเกษตรกรและโรงงานแบบโปร่งใส',
     isCoreStep: false,
     builder: (_) => const MiddlemanTradeListPage(),
+  ),
+  MiddlemanFlowStep(
+    icon: Icons.payments_outlined,
+    color: MiddlemanPalette.success,
+    title: 'การเงินและการชำระเงิน',
+    description: 'ยืนยันการจ่ายเงินให้เกษตรกรและติดตามการรับชำระจากโรงงาน',
+    actionLabel: 'จัดการการเงิน',
+    shortcutLabel: 'สรุปการเงิน',
+    shortcutDescription: 'ดูสถานะการโอนเงิน คู่สัญญา และยอดที่ต้องติดตาม',
+    isCoreStep: false,
+    builder: (_) => const MiddlemanFinancePage(),
   ),
 ];

@@ -343,6 +343,13 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
         .where((ref) => ref.isNotEmpty)
         .toList();
 
+    if (tickets.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ระบุเลขใบรับซื้ออย่างน้อย 1 รายการ')),
+      );
+      return;
+    }
+
     FocusScope.of(context).unfocus();
     _repository.scheduleDelivery(
       deliveryId: id,
@@ -362,7 +369,9 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
     _truckController.clear();
     _weightController.text = '15000';
     _ticketController.clear();
-    _selectedDeparture = DateTime.now().add(const Duration(hours: 2));
+    setState(() {
+      _selectedDeparture = DateTime.now().add(const Duration(hours: 2));
+    });
   }
 
   String _formatDateTime(DateTime time) {

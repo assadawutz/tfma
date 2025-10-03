@@ -314,7 +314,7 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
     _processingBatches.insert(
       0,
       ProcessingBatch(
-        batchId: 'PR-${ticketId.substring(ticketId.length - 3)}',
+        batchId: _batchIdFromTicket(ticketId),
         originTicketId: ticketId,
         weightKg: weightKg,
         location: 'ลานตากหลัก',
@@ -629,6 +629,24 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
     if (_activityFeed.length > 50) {
       _activityFeed.removeLast();
     }
+  }
+
+  String _batchIdFromTicket(String ticketId) {
+    final numeric = RegExp(r'\d+')
+        .allMatches(ticketId)
+        .map((match) => match.group(0)!)
+        .join();
+    final cleaned = (numeric.isNotEmpty ? numeric : ticketId)
+        .replaceAll(RegExp(r'[^A-Za-z0-9]'), '');
+    if (cleaned.isEmpty) {
+      final fallback = (DateTime.now().millisecondsSinceEpoch % 1000)
+          .toString()
+          .padLeft(3, '0');
+      return 'PR-$fallback';
+    }
+    final suffixLength = cleaned.length >= 3 ? 3 : cleaned.length;
+    final suffix = cleaned.substring(cleaned.length - suffixLength).padLeft(3, '0');
+    return 'PR-$suffix';
   }
 
   bool _isSameDay(DateTime a, DateTime b) {

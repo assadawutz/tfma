@@ -97,6 +97,10 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
     final pendingInspect =
         _repository.moistureLogs.where((log) => log.moisture > 14).length;
 
+    final usagePercent = totalCapacity == 0
+        ? 0
+        : (totalStored / totalCapacity * 100).clamp(0, 100);
+
     final metrics = [
       (
         title: 'สต็อกพร้อมขาย',
@@ -115,7 +119,9 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
       (
         title: 'พื้นที่รวมทั้งหมด',
         value: '${totalCapacity.toStringAsFixed(1)} ตัน',
-        caption: 'ใช้ไปแล้ว ${(totalStored / totalCapacity * 100).clamp(0, 100).toStringAsFixed(0)}%',
+        caption: totalCapacity == 0
+            ? 'ยังไม่มีการตั้งค่าความจุ'
+            : 'ใช้ไปแล้ว ${usagePercent.toStringAsFixed(0)}%',
         icon: Icons.warehouse_outlined,
         color: MiddlemanPalette.info,
       ),

@@ -63,6 +63,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "provider",
       "version": "6.1.5+1",
       "dependencies": [
@@ -72,6 +73,8 @@
       ]
     },
     {
+=======
+>>>>>>> Stashed changes
       "name": "path_provider",
       "version": "2.1.5",
       "dependencies": [
@@ -84,6 +87,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "dio",
       "version": "5.9.0",
       "dependencies": [
@@ -97,6 +101,8 @@
       ]
     },
     {
+=======
+>>>>>>> Stashed changes
       "name": "cupertino_icons",
       "version": "1.0.8",
       "dependencies": []
@@ -143,6 +149,29 @@
       "dependencies": []
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "vector_math",
+      "version": "2.1.4",
+      "dependencies": []
+    },
+    {
+      "name": "test_api",
+      "version": "0.7.4",
+      "dependencies": [
+        "async",
+        "boolean_selector",
+        "collection",
+        "meta",
+        "source_span",
+        "stack_trace",
+        "stream_channel",
+        "string_scanner",
+        "term_glyph"
+      ]
+    },
+    {
+>>>>>>> Stashed changes
       "name": "term_glyph",
       "version": "1.2.2",
       "dependencies": []
@@ -162,6 +191,16 @@
       ]
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "stack_trace",
+      "version": "1.12.1",
+      "dependencies": [
+        "path"
+      ]
+    },
+    {
+>>>>>>> Stashed changes
       "name": "source_span",
       "version": "1.10.1",
       "dependencies": [
@@ -171,6 +210,14 @@
       ]
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
+    },
+    {
+>>>>>>> Stashed changes
       "name": "meta",
       "version": "1.16.0",
       "dependencies": []
@@ -183,6 +230,20 @@
       ]
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "matcher",
+      "version": "0.12.17",
+      "dependencies": [
+        "async",
+        "meta",
+        "stack_trace",
+        "term_glyph",
+        "test_api"
+      ]
+    },
+    {
+>>>>>>> Stashed changes
       "name": "leak_tracker_testing",
       "version": "3.0.1",
       "dependencies": [
@@ -192,6 +253,20 @@
       ]
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "leak_tracker_flutter_testing",
+      "version": "3.0.9",
+      "dependencies": [
+        "flutter",
+        "leak_tracker",
+        "leak_tracker_testing",
+        "matcher",
+        "meta"
+      ]
+    },
+    {
+>>>>>>> Stashed changes
       "name": "leak_tracker",
       "version": "10.0.9",
       "dependencies": [
@@ -203,11 +278,30 @@
       ]
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "fake_async",
+      "version": "1.3.3",
+      "dependencies": [
+        "clock",
+        "collection"
+      ]
+    },
+    {
+>>>>>>> Stashed changes
       "name": "collection",
       "version": "1.19.1",
       "dependencies": []
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "clock",
+      "version": "1.1.2",
+      "dependencies": []
+    },
+    {
+>>>>>>> Stashed changes
       "name": "characters",
       "version": "1.4.0",
       "dependencies": []
@@ -229,6 +323,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "leak_tracker_flutter_testing",
       "version": "3.0.9",
       "dependencies": [
@@ -293,6 +388,39 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+=======
+      "name": "sky_engine",
+      "version": "0.0.0",
+      "dependencies": []
+    },
+    {
+      "name": "provider",
+      "version": "6.1.5+1",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "nested"
+      ]
+    },
+    {
+      "name": "nested",
+      "version": "1.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "dio",
+      "version": "5.9.0",
+      "dependencies": [
+        "async",
+        "collection",
+        "dio_web_adapter",
+        "http_parser",
+        "meta",
+        "mime",
+        "path"
+>>>>>>> Stashed changes
       ]
     },
     {
@@ -308,6 +436,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "shared_preferences_web",
       "version": "2.4.3",
       "dependencies": [
@@ -318,6 +447,8 @@
       ]
     },
     {
+=======
+>>>>>>> Stashed changes
       "name": "shared_preferences_platform_interface",
       "version": "2.4.1",
       "dependencies": [
@@ -338,6 +469,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "shared_preferences_foundation",
       "version": "2.5.4",
       "dependencies": [
@@ -358,6 +490,30 @@
       "version": "1.0.0",
       "dependencies": [
         "flutter"
+=======
+      "name": "path_provider_linux",
+      "version": "2.2.1",
+      "dependencies": [
+        "ffi",
+        "flutter",
+        "path",
+        "path_provider_platform_interface",
+        "xdg_directories"
+      ]
+    },
+    {
+      "name": "qr",
+      "version": "3.0.2",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
+>>>>>>> Stashed changes
       ]
     },
     {
@@ -380,6 +536,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "path_provider_linux",
       "version": "2.2.1",
       "dependencies": [
@@ -413,10 +570,19 @@
         "dio",
         "http_parser",
         "meta",
+=======
+      "name": "shared_preferences_web",
+      "version": "2.4.3",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "shared_preferences_platform_interface",
+>>>>>>> Stashed changes
         "web"
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "mime",
       "version": "2.0.0",
       "dependencies": []
@@ -457,6 +623,8 @@
       "dependencies": []
     },
     {
+=======
+>>>>>>> Stashed changes
       "name": "flutter_web_plugins",
       "version": "0.0.0",
       "dependencies": [
@@ -469,6 +637,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "plugin_platform_interface",
       "version": "2.1.8",
       "dependencies": [
@@ -476,11 +645,77 @@
       ]
     },
     {
+=======
+      "name": "path_provider_foundation",
+      "version": "2.4.2",
+      "dependencies": [
+        "flutter",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "shared_preferences_foundation",
+      "version": "2.5.4",
+      "dependencies": [
+        "flutter",
+        "shared_preferences_platform_interface"
+      ]
+    },
+    {
+      "name": "dio_web_adapter",
+      "version": "2.1.1",
+      "dependencies": [
+        "dio",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "http_parser",
+      "version": "4.1.2",
+      "dependencies": [
+        "collection",
+        "source_span",
+        "string_scanner",
+        "typed_data"
+      ]
+    },
+    {
+      "name": "typed_data",
+      "version": "1.4.0",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
+      "name": "mime",
+      "version": "2.0.0",
+      "dependencies": []
+    },
+    {
+>>>>>>> Stashed changes
       "name": "ffi",
       "version": "2.1.4",
       "dependencies": []
     },
     {
+<<<<<<< Updated upstream
+=======
+      "name": "file",
+      "version": "7.0.1",
+      "dependencies": [
+        "meta",
+        "path"
+      ]
+    },
+    {
+>>>>>>> Stashed changes
       "name": "platform",
       "version": "3.1.6",
       "dependencies": []
@@ -494,10 +729,26 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "name": "typed_data",
       "version": "1.4.0",
       "dependencies": [
         "collection"
+=======
+      "name": "path_provider_android",
+      "version": "2.2.18",
+      "dependencies": [
+        "flutter",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "shared_preferences_android",
+      "version": "2.4.13",
+      "dependencies": [
+        "flutter",
+        "shared_preferences_platform_interface"
+>>>>>>> Stashed changes
       ]
     }
   ],

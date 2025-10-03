@@ -341,7 +341,11 @@
       "name": "tfma",
       "rootUri": "../",
       "packageUri": "lib/",
+<<<<<<< Updated upstream
       "languageVersion": "3.4"
+=======
+      "languageVersion": "3.0"
+>>>>>>> Stashed changes
     }
   ],
   "generator": "pub",

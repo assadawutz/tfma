@@ -207,7 +207,11 @@ xdg_directories
 file:///Users/arty/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0/
 file:///Users/arty/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0/lib/
 tfma
+<<<<<<< Updated upstream
 3.4
+=======
+3.0
+>>>>>>> Stashed changes
 file:///Users/arty/Documents/GitHub/tfma/
 file:///Users/arty/Documents/GitHub/tfma/lib/
 sky_engine

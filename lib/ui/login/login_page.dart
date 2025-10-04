@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../component/next_button.dart';
 import '../../util/color.dart';
+import '../../util/user_role.dart';
 import '../register/register_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final UserRole role;
+
+  const LoginPage({super.key, required this.role});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -21,12 +24,36 @@ class _LoginPageState extends State<LoginPage> {
     borderSide: const BorderSide(color: Colors.black12),
   );
 
-  String? _validateFarmerId(String? value) {
+  bool get _isFarmer => widget.role == UserRole.farmer;
+
+  String get _identifierLabel =>
+      _isFarmer ? 'รหัสทะเบียนเกษตรกร' : 'รหัสผู้รวบรวม';
+
+  String get _identifierHint => _isFarmer
+      ? 'กรอกรหัสเกษตรกร 12 หลัก *'
+      : 'กรอกรหัสผู้รวบรวมอย่างน้อย 8 หลัก *';
+
+  String get _subtitleText => _isFarmer
+      ? 'ชื่อผู้ใช้งานและรหัสผ่านใช้เลขรหัสทะเบียนเกษตรกรบน\nสมุดทะเบียนเกษตร 12 หลัก (เล่มเขียว)'
+      : 'ชื่อผู้ใช้งานและรหัสผ่านใช้รหัสผู้รวบรวมที่ได้รับจากกรมการค้าภายใน\nหรือตามใบอนุญาตรับซื้อผลผลิต';
+
+  String get _pageTitle =>
+      _isFarmer ? 'เข้าใช้งาน' : 'เข้าสู่ระบบพ่อค้าคนกลาง';
+
+  String? _validateIdentifier(String? value) {
     if (value == null || value.isEmpty) {
-      return 'กรุณากรอกรหัสทะเบียนเกษตรกร';
+      return _isFarmer
+          ? 'กรุณากรอกรหัสทะเบียนเกษตรกร'
+          : 'กรุณากรอกรหัสผู้รวบรวม';
     }
-    if (value.length != 12) {
-      return 'รหัสต้องมี 12 หลัก';
+    if (_isFarmer) {
+      if (value.length != 12) {
+        return 'รหัสต้องมี 12 หลัก';
+      }
+    } else {
+      if (value.length < 8) {
+        return 'รหัสผู้รวบรวมต้องมีอย่างน้อย 8 หลัก';
+      }
     }
     return null;
   }
@@ -54,14 +81,11 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  Widget onLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => RegisterPage()),
-      );
-    }
-    return Container(); // Placeholder to satisfy return type
+  @override
+  void dispose() {
+    _farmerIdController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -69,9 +93,17 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       bottomNavigationBar: NextButton(
         color: AppColors.green,
-        // onPressed: onLogin(),
         label: 'เข้าสู่ระบบ',
-        nextPage: RegisterPage(),
+        onPressed: () {
+          if (_formKey.currentState?.validate() ?? false) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegisterPage(role: widget.role),
+              ),
+            );
+          }
+        },
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -90,9 +122,9 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "เข้าใช้งาน",
-                      style: TextStyle(
+                    Text(
+                      _pageTitle,
+                      style: const TextStyle(
                         fontFamily: "Kanit",
                         fontSize: 28,
                         fontWeight: FontWeight.w600,
@@ -104,11 +136,11 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
 
                     // รหัสเกษตรกร
-                    const Padding(
-                      padding: EdgeInsets.only(left: 16),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
                       child: Text(
-                        "รหัสทะเบียนเกษตรกร",
-                        style: TextStyle(
+                        _identifierLabel,
+                        style: const TextStyle(
                           fontFamily: "Kanit",
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -121,9 +153,9 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _farmerIdController,
                       keyboardType: TextInputType.number,
-                      validator: _validateFarmerId,
+                      validator: _validateIdentifier,
                       decoration: InputDecoration(
-                        hintText: 'กรอกรหัสเกษตรกร 12 หลัก *',
+                        hintText: _identifierHint,
                         hintStyle: TextStyle(color: AppColors.subtitle),
                         border: outlineBorder,
                         enabledBorder: outlineBorder,
@@ -174,9 +206,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 16),
 
-                    const Text(
-                      'ชื่อผู้ใช้งานและรหัสผ่านใช้เลขรหัสทะเบียนเกษตรกรบน\nสมุดทะเบียนเกษตร 12 หลัก (เล่มเขียว)',
-                      style: TextStyle(
+                    Text(
+                      _subtitleText,
+                      style: const TextStyle(
                         color: Colors.green,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,

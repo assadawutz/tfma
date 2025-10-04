@@ -4,12 +4,16 @@ class BaseScaffold extends StatefulWidget {
   final Widget child;
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
+  final Color? backgroundColor;
+  final Widget? headerBackground;
 
   const BaseScaffold({
     super.key,
     required this.child,
     this.appBar,
     this.bottomNavigationBar,
+    this.backgroundColor,
+    this.headerBackground,
   });
 
   @override
@@ -29,6 +33,7 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundColor,
       appBar: widget.appBar,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: SingleChildScrollView(
@@ -39,10 +44,11 @@ class _BaseScaffoldState extends State<BaseScaffold> {
             SizedBox(
               height: 100,
               width: double.infinity,
-              child: Image.asset(
-                'assets/images/halfcircle.png',
-                fit: BoxFit.cover,
-              ),
+              child: widget.headerBackground ??
+                  Image.asset(
+                    'assets/images/halfcircle.png',
+                    fit: BoxFit.cover,
+                  ),
             ),
 
             // เนื้อหาในแต่ละหน้า

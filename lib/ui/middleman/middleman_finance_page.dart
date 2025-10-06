@@ -1,319 +1,168 @@
 import 'package:flutter/material.dart';
 
 import 'middleman_shared_widgets.dart';
+import 'middleman_workflow_state.dart';
 
-class MiddlemanFinancePage extends StatelessWidget {
+class MiddlemanFinancePage extends StatefulWidget {
   const MiddlemanFinancePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MiddlemanScreenScaffold(
-      title: 'การเงินและการชำระเงิน',
-      subtitle: 'สรุปยอดรับจ่าย กำหนดการโอน และเอกสารอ้างอิงให้ตรวจสอบได้ทันที',
-      actionChips: const [
-        MiddlemanTag(label: 'จ่ายแล้วเดือนนี้ 4.2 ลบ.', color: MiddlemanPalette.success),
-        MiddlemanTag(label: 'รออนุมัติ 3 รายการ', color: MiddlemanPalette.warning),
-        MiddlemanTag(label: 'ใบแจ้งหนี้โรงงาน 2 ใบ', color: MiddlemanPalette.info),
-      ],
-      children: [
-        _buildFinancialHighlights(),
-        const MiddlemanSection(
-          title: 'กำหนดการจ่ายเงินให้เกษตรกร',
-          icon: Icons.groups_outlined,
-        ),
-        _buildFarmerPayments(),
-        const MiddlemanSection(
-          title: 'การรับชำระจากโรงงาน',
-          icon: Icons.domain_outlined,
-        ),
-        _buildFactoryReceivables(),
-        const MiddlemanSection(
-          title: 'จัดการเอกสารการเงิน',
-          icon: Icons.folder_copy_outlined,
-        ),
-        _buildFinanceForm(),
-      ],
-    );
+  State<MiddlemanFinancePage> createState() => _MiddlemanFinancePageState();
+}
+
+class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
+  final _formKey = GlobalKey<FormState>();
+  final _descriptionController = TextEditingController();
+  final _amountController = TextEditingController();
+  final _counterpartyController = TextEditingController();
+  bool _isExpense = true;
+  final _searchController = TextEditingController();
+  String _searchTerm = '';
+
+  MiddlemanWorkflowRepository get _repository =>
+      MiddlemanWorkflowRepository.instance;
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _amountController.dispose();
+    _counterpartyController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
-  Widget _buildFinancialHighlights() {
-    final metrics = [
-      (
-        title: 'ยอดคงเหลือสุทธิ',
-        value: '฿ 1,280,000',
-        caption: 'หลังหักค่าใช้จ่ายดำเนินงานล่าสุด',
-        icon: Icons.account_balance_wallet_outlined,
-        color: MiddlemanPalette.primary,
-      ),
-      (
-        title: 'ยอดค้างจ่ายเกษตรกร',
-        value: '฿ 320,000',
-        caption: 'ครบกำหนดภายใน 3 วันทำการ',
-        icon: Icons.price_check_outlined,
-        color: MiddlemanPalette.warning,
-      ),
-      (
-        title: 'ยอดค้างรับจากโรงงาน',
-        value: '฿ 980,000',
-        caption: 'อยู่ระหว่างรอการโอนจาก 2 โรงงาน',
-        icon: Icons.receipt_long,
-        color: MiddlemanPalette.info,
-      ),
-    ];
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _repository,
+      builder: (context, _) {
+        final transactions = _repository.financeTransactions;
+        final expenses = transactions
+            .where((tx) => tx.isExpense)
+            .fold<double>(0, (value, tx) => value + tx.amount);
+        final incomes = transactions
+            .where((tx) => !tx.isExpense)
+            .fold<double>(0, (value, tx) => value + tx.amount);
+        final settled = transactions.where((tx) => tx.settled).length;
+        final filteredTransactions = _filterTransactions(transactions);
+        final resultCount = filteredTransactions.length;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 900
-            ? 3
-            : constraints.maxWidth >= 600
-                ? 2
-                : 1;
-        final spacing = 12.0;
-        final width = (constraints.maxWidth - spacing * (columns - 1)) / columns;
-        return Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
+        return MiddlemanScreenScaffold(
+          title: 'การเงินและการชำระเงิน',
+          subtitle:
+              'ยืนยันการจ่ายเงินให้เกษตรกรและติดตามการรับชำระจากโรงงานแบบโปร่งใส',
+          actionChips: [
+            MiddlemanTag(
+              label: 'รายรับ ${_formatCurrency(incomes)}',
+              color: MiddlemanPalette.success,
+            ),
+            MiddlemanTag(
+              label: 'รายจ่าย ${_formatCurrency(expenses)}',
+              color: MiddlemanPalette.warning,
+            ),
+            MiddlemanTag(
+              label: 'ปรับสถานะแล้ว $settled รายการ',
+              color: MiddlemanPalette.info,
+            ),
+          ],
           children: [
-            for (final metric in metrics)
-              SizedBox(
-                width: width,
-                child: MiddlemanSummaryCard(
-                  title: metric.title,
-                  value: metric.value,
-                  caption: metric.caption,
-                  icon: metric.icon,
-                  color: metric.color,
-                ),
-              ),
+            _buildBalanceCard(incomes, expenses),
+            const MiddlemanSection(
+              title: 'บันทึกการทำธุรกรรม',
+              icon: Icons.receipt_long,
+            ),
+            _buildTransactionForm(),
+            const MiddlemanSection(
+              title: 'รายการล่าสุด',
+              icon: Icons.list_alt_outlined,
+            ),
+            _buildTransactionSearch(resultCount),
+            const SizedBox(height: 12),
+            ..._buildTransactionList(filteredTransactions),
           ],
         );
       },
     );
   }
 
-  Widget _buildFarmerPayments() {
-    final payments = [
-      (
-        farmer: 'สหกรณ์บ้านหนองโน',
-        amount: '฿ 185,000',
-        due: 'ครบกำหนด 12 พ.ค.',
-        status: 'รออนุมัติ',
-        color: MiddlemanPalette.warning,
-      ),
-      (
-        farmer: 'คุณสมศรี ทองดี',
-        amount: '฿ 72,500',
-        due: 'โอนสำเร็จ 9 พ.ค.',
-        status: 'จ่ายแล้ว',
-        color: MiddlemanPalette.success,
-      ),
-      (
-        farmer: 'กลุ่มวิสาหกิจบ้านโคก',
-        amount: '฿ 62,000',
-        due: 'รอโอน 10 พ.ค.',
-        status: 'กำลังโอน',
-        color: MiddlemanPalette.info,
-      ),
-    ];
+  Widget _buildBalanceCard(double incomes, double expenses) {
+    final balance = incomes - expenses;
+    final progress = incomes == 0 ? 0 : (expenses / incomes).clamp(0, 1);
 
-    return Column(
-      children: [
-        for (final payment in payments)
-          MiddlemanListTile(
-            leadingIcon: Icons.account_circle_outlined,
-            iconColor: payment.color,
-            title: payment.farmer,
-            subtitle: '${payment.amount}\n${payment.due}',
-            trailing: MiddlemanTag(label: payment.status, color: payment.color),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildFactoryReceivables() {
-    final receivables = [
-      (
-        factory: 'โรงงานชัยภูมิ',
-        amount: '฿ 420,000',
-        detail: 'ใบแจ้งหนี้ INV-CHP-1105 ครบกำหนด 14 พ.ค.',
-        progress: 0.6,
-        color: MiddlemanPalette.info,
-      ),
-      (
-        factory: 'โรงงานขอนแก่น',
-        amount: '฿ 320,000',
-        detail: 'รอการตรวจรับคุณภาพล็อต 230509-B',
-        progress: 0.35,
-        color: MiddlemanPalette.warning,
-      ),
-    ];
-
-    return Column(
-      children: [
-        for (final receivable in receivables)
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: receivable.color.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Icon(Icons.apartment_outlined, color: receivable.color),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            receivable.factory,
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            receivable.detail,
-                            style: const TextStyle(
-                              color: MiddlemanPalette.textSecondary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      receivable.amount,
-                      style: TextStyle(
-                        color: receivable.color,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: receivable.progress,
-                    color: receivable.color,
-                    backgroundColor: receivable.color.withOpacity(0.12),
-                    minHeight: 8,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'รอเอกสารรับโอน',
-                      style: TextStyle(
-                        color: MiddlemanPalette.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                    Text(
-                      'สถานะ ${(receivable.progress * 100).round()}%',
-                      style: const TextStyle(
-                        color: MiddlemanPalette.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildFinanceForm() {
     return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+              color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'สร้างบันทึกการเงิน',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-          ),
-          const SizedBox(height: 12),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth > 640;
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  SizedBox(
-                    width: isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth,
-                    child: _buildTextField('ประเภท', 'โอนเงินเกษตรกร / รับเงินโรงงาน'),
-                  ),
-                  SizedBox(
-                    width: isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth,
-                    child: _buildTextField('วันที่ทำรายการ', 'เลือกวันที่'),
-                  ),
-                  SizedBox(
-                    width: isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth,
-                    child: _buildTextField('จำนวนเงิน', 'ระบุจำนวนเป็นบาท'),
-                  ),
-                  SizedBox(
-                    width: isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth,
-                    child: _buildTextField('ผูกกับล็อต/ใบแจ้งหนี้', 'ตัวอย่าง: LOT-230511-A'),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          _buildTextField('หมายเหตุเพิ่มเติม', 'ระบุเลขที่สัญญา/เงื่อนไขการจ่าย'),
-          const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MiddlemanPalette.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Icons.save_outlined),
-                  label: const Text('บันทึกการทำรายการ'),
+              Container(
+                decoration: BoxDecoration(
+                  color: MiddlemanPalette.primary.withAlpha(40),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                padding: const EdgeInsets.all(12),
+                child: const Icon(Icons.account_balance_wallet_outlined,
+                    color: MiddlemanPalette.primary),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: MiddlemanPalette.info,
-                    side: const BorderSide(color: MiddlemanPalette.info),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Icons.picture_as_pdf_outlined),
-                  label: const Text('แนบเอกสารอ้างอิง'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'สรุปสถานะการเงิน',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'ยอดคงเหลือสุทธิ ${_formatCurrency(balance)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: MiddlemanPalette.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              MiddlemanTag(
+                label: balance >= 0 ? 'สภาพคล่องดี' : 'ควบคุมค่าใช้จ่าย',
+                color: balance >= 0
+                    ? MiddlemanPalette.success
+                    : MiddlemanPalette.warning,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          LinearProgressIndicator(
+            value: progress.toDouble(),
+            backgroundColor: const Color(0xFFE0E6EE),
+            color: balance >= 0
+                ? MiddlemanPalette.success
+                : MiddlemanPalette.warning,
+            minHeight: 10,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('รายจ่าย ${_formatCurrency(expenses)}',
+                  style:
+                      const TextStyle(color: MiddlemanPalette.textSecondary)),
+              Text('รายรับ ${_formatCurrency(incomes)}',
+                  style:
+                      const TextStyle(color: MiddlemanPalette.textSecondary)),
             ],
           ),
         ],
@@ -321,31 +170,304 @@ class MiddlemanFinancePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, String hint) {
+  Widget _buildTransactionForm() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+        ],
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: _descriptionController,
+              decoration: InputDecoration(
+                labelText: 'รายละเอียดรายการ',
+                hintText: 'เช่น ชำระเงินรับซื้อ RC-2024-074',
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: const Color(0xFFF7F9FC),
+              ),
+              validator: (value) => value == null || value.isEmpty
+                  ? 'ระบุรายละเอียดรายการ'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _amountController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: 'จำนวนเงิน (บาท)',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: const Color(0xFFF7F9FC),
+                    ),
+                    validator: (value) {
+                      final parsed = double.tryParse(value ?? '');
+                      if (parsed == null || parsed <= 0) {
+                        return 'กรอกจำนวนเงินที่ถูกต้อง';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _counterpartyController,
+                    decoration: InputDecoration(
+                      labelText: 'คู่สัญญา/ผู้รับเงิน',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: const Color(0xFFF7F9FC),
+                    ),
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'กรอกชื่อคู่สัญญา'
+                        : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: SwitchListTile(
+                    value: _isExpense,
+                    onChanged: (value) => setState(() => _isExpense = value),
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('บันทึกเป็นรายจ่าย'),
+                    subtitle: const Text('ปิดสวิตช์เพื่อบันทึกเป็นรายรับ'),
+                    activeColor: MiddlemanPalette.warning,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _recordTransaction,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MiddlemanPalette.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text('บันทึก'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTransactionSearch(int resultCount) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        MiddlemanSearchField(
+          controller: _searchController,
+          hintText: 'ค้นหาเลขธุรกรรม รายละเอียด หรือคู่ค้า',
+          onChanged: (value) => setState(() => _searchTerm = value.trim()),
         ),
-        const SizedBox(height: 6),
-        TextField(
-          decoration: InputDecoration(
-            hintText: hint,
-            filled: true,
-            fillColor: const Color(0xFFF7F9FC),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE0E6EE)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: MiddlemanPalette.primary),
-            ),
+        const SizedBox(height: 8),
+        Text(
+          _searchTerm.isEmpty
+              ? 'แสดงทั้งหมด $resultCount รายการ'
+              : 'ผลการค้นหา $resultCount รายการ',
+          style: const TextStyle(
+            fontSize: 12,
+            color: MiddlemanPalette.textSecondary,
           ),
         ),
       ],
     );
+  }
+
+  List<FinanceTransaction> _filterTransactions(
+      List<FinanceTransaction> transactions) {
+    if (_searchTerm.isEmpty) {
+      return transactions;
+    }
+    final query = _searchTerm.toLowerCase();
+    return transactions
+        .where((tx) =>
+            '${tx.transactionId} ${tx.description} ${tx.counterparty}'
+                .toLowerCase()
+                .contains(query))
+        .toList();
+  }
+
+  Future<void> _confirmDeleteTransaction(FinanceTransaction tx) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ลบรายการเงิน'),
+        content: Text(
+            'ยืนยันการลบ ${tx.transactionId} (${tx.description}) หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('ยกเลิก'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('ลบรายการ'),
+          ),
+        ],
+      ),
+    );
+    if (shouldDelete != true) {
+      return;
+    }
+    final success = _repository.deleteFinanceTransaction(tx.transactionId);
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่พบรายการในระบบ')),
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('ลบรายการ ${tx.transactionId} แล้ว')),
+    );
+    setState(() {});
+  }
+
+  List<Widget> _buildTransactionList(List<FinanceTransaction> transactions) {
+    if (transactions.isEmpty) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
+            ],
+          ),
+          child: Text(
+            _searchTerm.isEmpty
+                ? 'ยังไม่มีรายการในระบบ กดบันทึกด้านบนเพื่อเพิ่มข้อมูล'
+                : 'ไม่พบรายการที่ตรงกับ "$_searchTerm"',
+            style: const TextStyle(color: MiddlemanPalette.textSecondary),
+          ),
+        ),
+      ];
+    }
+
+    return [
+      for (final tx in transactions)
+        MiddlemanListTile(
+          leadingIcon: tx.isExpense ? Icons.south_west : Icons.north_east,
+          iconColor: tx.isExpense
+              ? MiddlemanPalette.warning
+              : MiddlemanPalette.success,
+          title: '${tx.transactionId} • ${tx.counterparty}',
+          subtitle:
+              '${_formatCurrency(tx.amount)} • ${_formatDateTime(tx.timestamp)}\n${tx.description}',
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Switch(
+                value: tx.settled,
+                onChanged: (value) =>
+                    _repository.toggleFinanceSettlement(tx, value),
+                activeColor: MiddlemanPalette.success,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                tx.settled ? 'ชำระเรียบร้อย' : 'รอตรวจสอบ',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: MiddlemanPalette.textSecondary,
+                ),
+              ),
+              TextButton(
+                onPressed: () => _confirmDeleteTransaction(tx),
+                child: const Text(
+                  'ลบ',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+              ),
+            ],
+          ),
+        ),
+    ];
+  }
+
+  void _recordTransaction() {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    final amount = double.parse(_amountController.text.trim());
+    final description = _descriptionController.text.trim();
+    final counterparty = _counterpartyController.text.trim();
+
+    FocusScope.of(context).unfocus();
+    final id =
+        'FIN-${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}';
+    final result = _repository.recordFinanceTransaction(
+      transactionId: id,
+      description: description,
+      amount: amount,
+      counterparty: counterparty,
+      isExpense: _isExpense,
+    );
+
+    if (result == WorkflowMutationResult.ignored) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('ไม่สามารถบันทึกธุรกรรมได้ กรุณาตรวจสอบข้อมูล')),
+      );
+      return;
+    }
+
+    _formKey.currentState?.reset();
+    _descriptionController.clear();
+    _amountController.clear();
+    _counterpartyController.clear();
+    setState(() {
+      _isExpense = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          result == WorkflowMutationResult.created
+              ? 'บันทึกธุรกรรม $id แล้ว'
+              : 'อัปเดตรายการการเงิน $id แล้ว',
+        ),
+      ),
+    );
+  }
+
+  String _formatCurrency(double amount) {
+    return '฿${amount.toStringAsFixed(2)}';
+  }
+
+  String _formatDateTime(DateTime time) {
+    final date =
+        '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
+    final hour =
+        '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    return '$date • $hour น.';
   }
 }

@@ -4,6 +4,7 @@ import 'middleman_alerts_page.dart';
 import 'middleman_factory_delivery_page.dart';
 import 'middleman_finance_page.dart';
 import 'middleman_inventory_page.dart';
+import 'middleman_insights_page.dart';
 import 'middleman_moisture_page.dart';
 import 'middleman_processing_page.dart';
 import 'middleman_purchase_page.dart';
@@ -144,5 +145,16 @@ final List<MiddlemanFlowStep> middlemanFlowSteps = [
     shortcutDescription: 'ดูสถานะการโอนเงิน คู่สัญญา และยอดที่ต้องติดตาม',
     isCoreStep: false,
     builder: (_) => const MiddlemanFinancePage(),
+  ),
+  MiddlemanFlowStep(
+    icon: Icons.insights_outlined,
+    color: MiddlemanPalette.primary,
+    title: 'ภาพรวมเชิงลึก',
+    description: 'วิเคราะห์โควต้า ความชื้น การจัดส่ง และการเงินในมุมมองเดียว',
+    actionLabel: 'เปิดอินไซท์',
+    shortcutLabel: 'แดชบอร์ดเชิงลึก',
+    shortcutDescription: 'จับคอขวดและแจ้งเตือนประเด็นที่ต้องเร่งแก้',
+    isCoreStep: false,
+    builder: (_) => const MiddlemanInsightsPage(),
   ),
 ];

@@ -27,6 +27,7 @@ class MiddlemanScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canPop = Navigator.canPop(context);
     return BaseScaffold(
       backgroundColor: MiddlemanPalette.background,
       headerBackground: Container(
@@ -48,22 +49,24 @@ class MiddlemanScreenScaffold extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).maybePop(),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white24,
-                    shape: BoxShape.circle,
-                  ),
-                  padding: const EdgeInsets.all(6),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: Colors.white,
+              if (canPop) ...[
+                GestureDetector(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(6),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
+                const SizedBox(width: 12),
+              ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,6 +182,121 @@ class MiddlemanSummaryCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MiddlemanInsightCard extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String value;
+  final String trend;
+  final String description;
+  final double? progress;
+  final VoidCallback? onTap;
+
+  const MiddlemanInsightCard({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.value,
+    required this.trend,
+    required this.description,
+    this.progress,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(icon, color: color),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            value,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            trend,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (progress != null) ...[
+                  const SizedBox(height: 12),
+                  LinearProgressIndicator(
+                    value: progress!.clamp(0.0, 1.0).toDouble(),
+                    backgroundColor: const Color(0xFFE0E6EE),
+                    color: color,
+                    minHeight: 8,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: MiddlemanPalette.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -399,6 +517,79 @@ class MiddlemanActionButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class MiddlemanSearchField extends StatefulWidget {
+  const MiddlemanSearchField({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
+  final ValueChanged<String>? onChanged;
+
+  @override
+  State<MiddlemanSearchField> createState() => _MiddlemanSearchFieldState();
+}
+
+class _MiddlemanSearchFieldState extends State<MiddlemanSearchField> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_handleUpdate);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_handleUpdate);
+    super.dispose();
+  }
+
+  void _handleUpdate() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.controller,
+      onChanged: widget.onChanged,
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.search, color: MiddlemanPalette.textSecondary),
+        suffixIcon: widget.controller.text.isEmpty
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.close),
+                color: MiddlemanPalette.textSecondary,
+                onPressed: () {
+                  widget.controller.clear();
+                  widget.onChanged?.call('');
+                },
+              ),
+        hintText: widget.hintText,
+        filled: true,
+        fillColor: const Color(0xFFF7F9FC),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFE0E6EE)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFE0E6EE)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: MiddlemanPalette.primary),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       ),
     );
   }

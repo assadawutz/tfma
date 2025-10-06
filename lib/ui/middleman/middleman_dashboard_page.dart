@@ -1,182 +1,311 @@
 import 'package:flutter/material.dart';
 
+import 'middleman_alerts_page.dart';
 import 'middleman_flow.dart';
+import 'middleman_insights_page.dart';
 import 'middleman_shared_widgets.dart';
+import 'middleman_workflow_state.dart';
 
 class MiddlemanDashboardPage extends StatelessWidget {
   const MiddlemanDashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MiddlemanScreenScaffold(
-      title: 'ศูนย์พ่อค้าคนกลาง',
-      subtitle: 'ตรวจสอบสถานะงานรวบรวมข้าวโพดและไปยังขั้นตอนถัดไปได้จากหน้าเดียว',
-      actionChips: const [
-        MiddlemanTag(label: 'สต็อกพร้อมขาย 180 ตัน', color: MiddlemanPalette.success),
-        MiddlemanTag(label: 'ล็อตรอตรวจ 5 รายการ', color: MiddlemanPalette.info),
-        MiddlemanTag(label: 'แจ้งเตือน 2 รายการ', color: MiddlemanPalette.warning),
-        MiddlemanTag(label: 'ยอดคงเหลือสุทธิ ฿1.28 ลบ.', color: MiddlemanPalette.primary),
-      ],
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final columns = constraints.maxWidth >= 960
-                ? 3
-                : constraints.maxWidth >= 620
-                    ? 2
-                    : 1;
-            const spacing = 12.0;
-            final itemWidth =
-                columns == 1 ? constraints.maxWidth : (constraints.maxWidth - spacing * (columns - 1)) / columns;
-            final summaries = [
-              const MiddlemanSummaryCard(
-                title: 'รับซื้อวันนี้',
-                value: '36,500 กก.',
-                icon: Icons.shopping_bag_outlined,
-                color: MiddlemanPalette.primary,
-                caption: 'มาจาก 12 ฟาร์มในระบบ',
-              ),
-              const MiddlemanSummaryCard(
-                title: 'ความชื้นเฉลี่ย',
-                value: '13.8 %',
-                icon: Icons.water_drop_outlined,
-                color: MiddlemanPalette.info,
-                caption: 'ต้องต่ำกว่า 14% ก่อนส่งโรงงาน',
-              ),
-              const MiddlemanSummaryCard(
-                title: 'กำลังแปรรูป',
-                value: '22 ตัน',
-                icon: Icons.settings_suggest_outlined,
-                color: MiddlemanPalette.warning,
-                caption: 'เตรียมพร้อมสำหรับจัดส่งรอบเย็น',
-              ),
-              const MiddlemanSummaryCard(
-                title: 'พื้นที่จัดเก็บคงเหลือ',
-                value: '45 %',
-                icon: Icons.inventory_2_outlined,
-                color: MiddlemanPalette.info,
-                caption: 'Silo #1 ใกล้เต็ม ควรย้ายเข้าคลังสำรอง',
-              ),
-              const MiddlemanSummaryCard(
-                title: 'ส่งมอบสำเร็จ',
-                value: '4 เที่ยว',
-                icon: Icons.local_shipping_outlined,
-                color: MiddlemanPalette.success,
-                caption: 'โรงงานชัยภูมิ, ขอนแก่น, ลพบุรี',
-              ),
-              const MiddlemanSummaryCard(
-                title: 'ยอดคงเหลือสุทธิ',
-                value: '฿ 1.28 ลบ.',
-                icon: Icons.account_balance_wallet_outlined,
-                color: MiddlemanPalette.primary,
-                caption: 'หลังหักค่าใช้จ่ายและเงินที่ต้องจ่าย',
-              ),
-            ];
+    final repository = MiddlemanWorkflowRepository.instance;
+    return AnimatedBuilder(
+      animation: repository,
+      builder: (context, _) {
+        final totalPurchased = repository.totalPurchasedToday;
+        final moisture = repository.averageMoisture;
+        final processing = repository.processingInProgressWeight;
+        final storageUsage = repository.averageStorageUsage;
+        final deliveries = repository.completedDeliveriesToday;
+        final netBalance = repository.netBalance;
+        final activities = repository.activityFeed.take(8).toList();
+        final pendingAlerts =
+            repository.burnAlerts.where((alert) => !alert.acknowledged).toList();
+        final actionableAlerts = pendingAlerts.take(3).toList();
+        final insights = repository.workflowInsights;
+        final topInsights = insights.take(3).toList();
 
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
-              children: [
-                for (final card in summaries)
-                  SizedBox(width: itemWidth, child: card),
-              ],
-            );
-          },
-        ),
-        const MiddlemanSection(
-          title: 'ขั้นตอนงานวันนี้',
-          icon: Icons.flag_outlined,
-        ),
-        for (final step in middlemanFlowSteps.where((step) => step.isCoreStep))
-          MiddlemanListTile(
-            leadingIcon: step.icon,
-            iconColor: step.color,
-            title: step.title,
-            subtitle: step.description,
-            trailing: TextButton(
-              onPressed: () => step.openPage(context),
-              child: Text(step.actionLabel),
+        return MiddlemanScreenScaffold(
+          title: 'ศูนย์พ่อค้าคนกลาง',
+          subtitle:
+              'ตรวจสอบสถานะงานรวบรวมข้าวโพดและไปยังขั้นตอนถัดไปได้จากหน้าเดียว',
+          actionChips: [
+            MiddlemanTag(
+              label: 'สต็อกพร้อมขาย ${_formatWeight(repository.inventoryLots.fold<double>(0, (value, lot) => value + lot.filledTons * 1000))}',
+              color: MiddlemanPalette.success,
+            ),
+            MiddlemanTag(
+              label: 'คิวรอรับซื้อ ${repository.farmerQueue.length} ราย',
+              color: MiddlemanPalette.info,
+            ),
+            MiddlemanTag(
+              label: 'การแจ้งเตือน ${repository.burnAlerts.where((alert) => !alert.acknowledged).length} รายการ',
+              color: MiddlemanPalette.warning,
+            ),
+            MiddlemanTag(
+              label: 'ยอดคงเหลือสุทธิ ฿${netBalance.toStringAsFixed(2)}',
+              color: MiddlemanPalette.primary,
+            ),
+            if (insights.isNotEmpty)
+              MiddlemanTag(
+                label: 'อินไซท์ ${insights.length} ประเด็น',
+                color: MiddlemanPalette.info,
+              ),
+          ],
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 960
+                    ? 3
+                    : constraints.maxWidth >= 620
+                        ? 2
+                        : 1;
+                const spacing = 12.0;
+                final itemWidth = columns == 1
+                    ? constraints.maxWidth
+                    : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+                final summaries = [
+                  MiddlemanSummaryCard(
+                    title: 'รับซื้อวันนี้',
+                    value: _formatWeight(totalPurchased),
+                    icon: Icons.shopping_bag_outlined,
+                    color: MiddlemanPalette.primary,
+                    caption: 'จาก ${repository.purchases.length} ใบรับซื้อ',
+                  ),
+                  MiddlemanSummaryCard(
+                    title: 'ความชื้นเฉลี่ย',
+                    value: moisture != null
+                        ? '${moisture.toStringAsFixed(1)} %'
+                        : 'ยังไม่มีข้อมูล',
+                    icon: Icons.water_drop_outlined,
+                    color: MiddlemanPalette.info,
+                    caption: moisture != null
+                        ? 'รวม ${repository.moistureLogs.length} รายการวันนี้'
+                        : 'ยังไม่ได้บันทึกค่าความชื้น',
+                  ),
+                  MiddlemanSummaryCard(
+                    title: 'กำลังแปรรูป',
+                    value: _formatWeight(processing),
+                    icon: Icons.settings_suggest_outlined,
+                    color: MiddlemanPalette.warning,
+                    caption: '${repository.processingBatches.where((batch) => batch.stage != ProcessingStage.completed).length} ล็อตอยู่ระหว่างดำเนินการ',
+                  ),
+                  MiddlemanSummaryCard(
+                    title: 'พื้นที่จัดเก็บคงเหลือ',
+                    value: '${(100 - storageUsage).clamp(0, 100).toStringAsFixed(0)} %',
+                    icon: Icons.inventory_2_outlined,
+                    color: MiddlemanPalette.info,
+                    caption: 'เฉลี่ยแต่ละคลังใช้ไป ${storageUsage.toStringAsFixed(0)}%',
+                  ),
+                  MiddlemanSummaryCard(
+                    title: 'ส่งมอบสำเร็จ',
+                    value: '$deliveries เที่ยว',
+                    icon: Icons.local_shipping_outlined,
+                    color: MiddlemanPalette.success,
+                    caption: 'อัปเดตล่าสุด ${_timeLabel()} น.',
+                  ),
+                  MiddlemanSummaryCard(
+                    title: 'ยอดคงเหลือสุทธิ',
+                    value: '฿ ${netBalance.toStringAsFixed(2)}',
+                    icon: Icons.account_balance_wallet_outlined,
+                    color: MiddlemanPalette.primary,
+                    caption:
+                        'รายรับ ${_formatCurrency(repository.financeTransactions.where((tx) => !tx.isExpense).fold(0.0, (value, tx) => value + tx.amount))} / รายจ่าย ${_formatCurrency(repository.financeTransactions.where((tx) => tx.isExpense).fold(0.0, (value, tx) => value + tx.amount))}',
+                  ),
+                ];
+
+                return Wrap(
+                  spacing: spacing,
+                  runSpacing: spacing,
+                  children: [
+                    for (final card in summaries)
+                      SizedBox(width: itemWidth, child: card),
+                  ],
+                );
+              },
+            ),
+            if (topInsights.isNotEmpty) ...[
+              const MiddlemanSection(
+                title: 'มุมมองเชิงลึก',
+                icon: Icons.insights_outlined,
+              ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final columns = constraints.maxWidth >= 960
+                      ? 3
+                      : constraints.maxWidth >= 720
+                          ? 2
+                          : 1;
+                  const spacing = 12.0;
+                  final itemWidth = columns == 1
+                      ? constraints.maxWidth
+                      : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+                  return Wrap(
+                    spacing: spacing,
+                    runSpacing: spacing,
+                    children: [
+                      for (final insight in topInsights)
+                        SizedBox(
+                          width: itemWidth,
+                          child: MiddlemanInsightCard(
+                            icon: insight.icon,
+                            color: insight.color,
+                            title: insight.title,
+                            value: insight.value,
+                            trend: insight.trendLabel,
+                            description: insight.description,
+                            progress: insight.progress,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const MiddlemanInsightsPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+              if (insights.length > topInsights.length)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MiddlemanInsightsPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.arrow_forward),
+                    label: const Text('ดูอินไซท์ทั้งหมด'),
+                  ),
+                ),
+            ],
+            const MiddlemanSection(
+              title: 'ขั้นตอนงานวันนี้',
+              icon: Icons.flag_outlined,
+            ),
+            for (final step in middlemanFlowSteps.where((step) => step.isCoreStep))
+              MiddlemanListTile(
+                leadingIcon: step.icon,
+                iconColor: step.color,
+                title: step.title,
+                subtitle: step.description,
+                trailing: TextButton(
+                  onPressed: () => step.openPage(context),
+                  child: Text(step.actionLabel),
+                ),
+              ),
+            const MiddlemanSection(
+              title: 'เมนูด่วน',
+              icon: Icons.dashboard_customize_outlined,
+            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 960
+                    ? 3
+                    : constraints.maxWidth >= 620
+                        ? 2
+                        : 1;
+                const spacing = 12.0;
+                final itemWidth = columns == 1
+                    ? constraints.maxWidth
+                    : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+                return Wrap(
+                  spacing: spacing,
+                  runSpacing: spacing,
+                  children: [
+                    for (final step in middlemanFlowSteps)
+                      SizedBox(
+                        width: itemWidth,
+                        child: MiddlemanActionButton(
+                          icon: step.icon,
+                          label: step.shortcutLabel ?? step.title,
+                          description: step.shortcutDescription,
+                          onTap: () => step.openPage(context),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          if (actionableAlerts.isNotEmpty) ...[
+            const MiddlemanSection(
+              title: 'แจ้งเตือนที่ต้องติดตาม',
+              icon: Icons.warning_amber_outlined,
+            ),
+            for (final alert in actionableAlerts)
+              MiddlemanListTile(
+                leadingIcon: Icons.local_fire_department,
+                iconColor: _alertColor(alert.severity),
+                title: alert.location,
+                subtitle: _formatAlertSubtitle(alert),
+                trailing: FilledButton.tonal(
+                  onPressed: () => repository.acknowledgeAlert(alert, true),
+                  child: const Text('รับทราบแล้ว'),
+                ),
+              ),
+            if (pendingAlerts.length > actionableAlerts.length)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const MiddlemanAlertsPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.open_in_new),
+                  label: Text(
+                    'ดูแจ้งเตือนทั้งหมด ${pendingAlerts.length} รายการ',
+                  ),
+                ),
+              ),
+          ],
+          const MiddlemanSection(
+            title: 'ความเคลื่อนไหวล่าสุด',
+            icon: Icons.schedule_outlined,
+            trailing: Text(
+              'อัปเดตอัตโนมัติทุก 10 นาที',
+              style: TextStyle(
+                color: MiddlemanPalette.textSecondary,
+                fontSize: 12,
+              ),
             ),
           ),
-        const MiddlemanSection(
-          title: 'เมนูด่วน',
-          icon: Icons.dashboard_customize_outlined,
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final columns = constraints.maxWidth >= 960
-                ? 3
-                : constraints.maxWidth >= 620
-                    ? 2
-                    : 1;
-            const spacing = 12.0;
-            final itemWidth =
-                columns == 1 ? constraints.maxWidth : (constraints.maxWidth - spacing * (columns - 1)) / columns;
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
-              children: [
-                for (final step in middlemanFlowSteps)
-                  SizedBox(
-                    width: itemWidth,
-                    child: MiddlemanActionButton(
-                      icon: step.icon,
-                      label: step.shortcutLabel ?? step.title,
-                      description: step.shortcutDescription,
-                      onTap: () => step.openPage(context),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-        const MiddlemanSection(
-          title: 'ความเคลื่อนไหวล่าสุด',
-          icon: Icons.schedule_outlined,
-          trailing: Text('อัปเดตอัตโนมัติทุก 10 นาที',
-              style: TextStyle(color: MiddlemanPalette.textSecondary, fontSize: 12)),
-        ),
-        _buildActivityTimeline(),
-      ],
+          _buildActivityTimeline(activities),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildActivityTimeline() {
-    final activities = [
-      (
-        icon: Icons.check_circle,
-        color: MiddlemanPalette.success,
-        title: 'จัดส่งเที่ยวที่ 4 สำเร็จ',
-        detail: 'รถบรรทุกทะเบียน 82-4495 ถึงโรงงานชัยภูมิ เวลา 15:20 น.',
-      ),
-      (
-        icon: Icons.water_drop,
-        color: MiddlemanPalette.info,
-        title: 'บันทึกความชื้นแปลง 7',
-        detail: 'ความชื้น 13.5% โดยเครื่องวัด Silo #2',
-      ),
-      (
-        icon: Icons.inventory_2,
-        color: MiddlemanPalette.info,
-        title: 'ย้ายล็อต 230510-C เข้าคลัง',
-        detail: 'Silo #2 ปรับสมดุลเหลือความจุ 68%',
-      ),
-      (
-        icon: Icons.fireplace,
-        color: MiddlemanPalette.warning,
-        title: 'แจ้งเตือนการเผาแปลง',
-        detail: 'พบควันในตำบลหนองสองห้อง แจ้งเจ้าหน้าที่ตรวจสอบ',
-      ),
-      (
-        icon: Icons.payments,
-        color: MiddlemanPalette.success,
-        title: 'จ่ายเงินให้สหกรณ์บ้านหนองโน',
-        detail: 'โอนจำนวน 185,000 บาท สำเร็จเมื่อ 14:10 น.',
-      ),
-    ];
-
+  Widget _buildActivityTimeline(List<WorkflowActivity> activities) {
     return Column(
       children: [
+        if (activities.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              ],
+            ),
+            child: const Text(
+              'ยังไม่มีความเคลื่อนไหวล่าสุด ระบบจะบันทึกกิจกรรมที่เกิดขึ้นโดยอัตโนมัติ',
+              style: TextStyle(color: MiddlemanPalette.textSecondary),
+            ),
+          ),
         for (final activity in activities)
           Container(
             margin: const EdgeInsets.only(bottom: 12),
@@ -219,6 +348,14 @@ class MiddlemanDashboardPage extends StatelessWidget {
                           color: MiddlemanPalette.textSecondary,
                         ),
                       ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _relativeTime(activity.timestamp),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: MiddlemanPalette.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -229,4 +366,61 @@ class MiddlemanDashboardPage extends StatelessWidget {
     );
   }
 
+  static String _formatWeight(double weightKg) {
+    if (weightKg >= 1000) {
+      return '${(weightKg / 1000).toStringAsFixed(1)} ตัน';
+    }
+    return '${weightKg.toStringAsFixed(0)} กก.';
+  }
+
+  static String _formatCurrency(double amount) {
+    if (amount >= 1000000) {
+      return '${(amount / 1000000).toStringAsFixed(2)} ลบ.';
+    }
+    if (amount >= 1000) {
+      return '${(amount / 1000).toStringAsFixed(1)} พันบาท';
+    }
+    return '${amount.toStringAsFixed(0)} บาท';
+  }
+
+  static String _relativeTime(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 1) return 'เมื่อสักครู่';
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes} นาทีที่แล้ว';
+    }
+    if (diff.inHours < 24) {
+      return '${diff.inHours} ชั่วโมงที่แล้ว';
+    }
+    return '${diff.inDays} วันที่แล้ว';
+  }
+
+  static String _timeLabel() {
+    final now = DateTime.now();
+    return '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+  }
+
+  static Color _alertColor(String severity) {
+    final normalized = severity.trim();
+    if (normalized == 'สูง') {
+      return Colors.redAccent;
+    }
+    if (normalized == 'ปานกลาง') {
+      return MiddlemanPalette.warning;
+    }
+    if (normalized == 'ต่ำ') {
+      return MiddlemanPalette.info;
+    }
+    return MiddlemanPalette.warning;
+  }
+
+  static String _formatAlertSubtitle(BurnAlert alert) {
+    final severity = alert.severity.trim();
+    final severityLabel = severity.isEmpty ? 'ไม่ระบุระดับ' : 'ระดับ$severity';
+    final description = alert.description.trim().isEmpty
+        ? 'ไม่มีรายละเอียดเพิ่มเติม'
+        : alert.description.trim();
+    final timeLabel = _relativeTime(alert.detectedAt);
+    return '$description • $severityLabel • $timeLabel';
+  }
 }

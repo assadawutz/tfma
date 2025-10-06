@@ -4,12 +4,13 @@ import '../../component/base_scaffold.dart';
 import '../area/area_page.dart';
 import '../product/create_product_page.dart';
 
-// ignore: must_be_immutable
 class HomePage extends StatefulWidget {
-  var routeName = 'home';
+  final String routeName;
 
   // final String filePath;
-  HomePage({Key? key, required this.routeName}) : super(key: key);
+  const HomePage({super.key, required this.routeName});
+
+  // HomePage({super.key, required this.routeName});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -105,10 +106,9 @@ class _HomePageState extends State<HomePage> {
                           'วันจันทร์ที่ 16 มิถุนายน 2568',
                           textAlign: TextAlign.end,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Color.fromRGBO(242, 102, 43, 1),
-                            fontWeight: FontWeight.w500,
-                          ),
+                              fontSize: 12,
+                              color: Color.fromRGBO(242, 102, 43, 1),
+                              fontWeight: FontWeight.w500),
                         ),
                         RichText(
                           text: TextSpan(
@@ -140,7 +140,9 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.black87, // สี default
                             ),
                             children: [
-                              TextSpan(text: 'ที่อยู่ : '),
+                              TextSpan(
+                                text: 'ที่อยู่ : ',
+                              ),
                               TextSpan(
                                 text: 'บ้านหนองบัว, อ.เมือง, จ.นครราชสีมา',
                                 style: TextStyle(
@@ -164,7 +166,9 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.black87, // สี default
                             ),
                             children: [
-                              TextSpan(text: 'หมายเลขเกษตรกร : '),
+                              TextSpan(
+                                text: 'หมายเลขเกษตรกร : ',
+                              ),
                               TextSpan(
                                 text: '123456XX',
                                 style: TextStyle(
@@ -555,35 +559,35 @@ TableRow tableRow(String a, String b, String c) {
 }
 
 Widget tableHeaderCell(String text) => Padding(
-  padding: const EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
-  child: Container(
-    height: 30,
-    alignment: Alignment.center,
-    child: Text(
-      text,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.w500,
-        fontSize: 13,
-        height: 0.12,
+      padding: const EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
+      child: Container(
+        height: 30,
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+            height: 0.12,
+          ),
+        ),
       ),
-    ),
-  ),
-);
+    );
 
 Widget tableCell(String text, {bool isBold = false}) => Padding(
-  padding: const EdgeInsets.only(left: 16, right: 10, top: 16, bottom: 16),
-  child: Container(
-    height: 72,
-    alignment: Alignment.center,
-    child: Text(
-      text,
-      textAlign: TextAlign.start,
-      style: TextStyle(
-        fontSize: 13,
-        fontWeight: isBold ? FontWeight.w600 : FontWeight.w500,
+      padding: const EdgeInsets.only(left: 16, right: 10, top: 16, bottom: 16),
+      child: Container(
+        height: 72,
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isBold ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
       ),
-    ),
-  ),
-);
+    );

@@ -1,49 +1,102 @@
 import 'package:flutter/material.dart';
 
 import 'middleman_shared_widgets.dart';
+import 'middleman_workflow_state.dart';
 
-class MiddlemanFactoryDeliveryPage extends StatelessWidget {
+class MiddlemanFactoryDeliveryPage extends StatefulWidget {
   const MiddlemanFactoryDeliveryPage({super.key});
 
   @override
+  State<MiddlemanFactoryDeliveryPage> createState() => _MiddlemanFactoryDeliveryPageState();
+}
+
+class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _deliveryIdController = TextEditingController();
+  final _factoryController = TextEditingController();
+  final _truckController = TextEditingController();
+  final _weightController = TextEditingController(text: '15000');
+  final _ticketController = TextEditingController();
+  DateTime _selectedDeparture = DateTime.now().add(const Duration(hours: 2));
+  final _searchController = TextEditingController();
+  String _searchTerm = '';
+
+  MiddlemanWorkflowRepository get _repository =>
+      MiddlemanWorkflowRepository.instance;
+
+  @override
+  void dispose() {
+    _deliveryIdController.dispose();
+    _factoryController.dispose();
+    _truckController.dispose();
+    _weightController.dispose();
+    _ticketController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MiddlemanScreenScaffold(
-      title: 'จัดส่งต่อโรงงาน',
-      subtitle: 'เตรียมเอกสาร ใบส่งมอบ และติดตามรถขนส่งจนถึงโรงงานปลายทาง',
-      actionChips: const [
-        MiddlemanTag(label: 'รอบจัดส่งวันนี้ 3 เที่ยว', color: MiddlemanPalette.primary),
-        MiddlemanTag(label: 'พร้อมออกเดินทาง 1 เที่ยว', color: MiddlemanPalette.success),
-      ],
-      children: [
-        const MiddlemanSection(
-          title: 'ภาพรวมการจัดส่ง',
-          icon: Icons.local_shipping_outlined,
-        ),
-        _buildDeliveryOverview(),
-        const MiddlemanSection(
-          title: 'เที่ยวรถวันนี้',
-          icon: Icons.calendar_today_outlined,
-        ),
-        ..._buildTrips(),
-        const MiddlemanSection(
-          title: 'เอกสารและใบส่งมอบ',
-          icon: Icons.assignment_outlined,
-        ),
-        _buildDocumentChecklist(),
-      ],
+    return AnimatedBuilder(
+      animation: _repository,
+      builder: (context, _) {
+        final deliveries = _repository.deliveries;
+        final scheduled =
+            deliveries.where((delivery) => delivery.status == DeliveryStatus.scheduled).toList();
+        final enRoute =
+            deliveries.where((delivery) => delivery.status == DeliveryStatus.enRoute).toList();
+        final delivered =
+            deliveries.where((delivery) => delivery.status == DeliveryStatus.delivered).toList();
+        final filteredScheduled = _filterDeliveries(scheduled);
+        final filteredEnRoute = _filterDeliveries(enRoute);
+        final filteredDelivered = _filterDeliveries(delivered);
+        final resultCount =
+            filteredScheduled.length + filteredEnRoute.length + filteredDelivered.length;
+
+        return MiddlemanScreenScaffold(
+          title: 'จัดส่งโรงงาน',
+          subtitle:
+              'วางแผนรอบรถ ตรวจสอบปลายทาง และเช็กอินด้วยคิวอาร์โค้ดโรงงานเพื่อบันทึกย้อนกลับ',
+          actionChips: [
+            MiddlemanTag(
+              label: 'รอออกเดินทาง ${scheduled.length} เที่ยว',
+              color: MiddlemanPalette.info,
+            ),
+            MiddlemanTag(
+              label: 'กำลังเดินทาง ${enRoute.length} เที่ยว',
+              color: MiddlemanPalette.warning,
+            ),
+            MiddlemanTag(
+              label: 'ส่งมอบแล้ว ${delivered.length} เที่ยว',
+              color: MiddlemanPalette.success,
+            ),
+          ],
+          children: [
+            _buildPlanForm(),
+            _buildDeliverySearch(resultCount),
+            const SizedBox(height: 12),
+            const MiddlemanSection(
+              title: 'รอออกเดินทาง',
+              icon: Icons.route_outlined,
+            ),
+            ..._buildDeliveryList(filteredScheduled),
+            const MiddlemanSection(
+              title: 'กำลังเดินทาง',
+              icon: Icons.airport_shuttle,
+            ),
+            ..._buildDeliveryList(filteredEnRoute),
+            const MiddlemanSection(
+              title: 'ส่งมอบสำเร็จ',
+              icon: Icons.verified_user_outlined,
+            ),
+            ..._buildDeliveryList(filteredDelivered, isCompleted: true),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildDeliveryOverview() {
-    final stats = [
-      _DeliveryStat('ปลายทาง 3 โรงงาน', Icons.home_work_outlined, MiddlemanPalette.primary,
-          'ชัยภูมิ, ขอนแก่น, ลพบุรี'),
-      _DeliveryStat('ปริมาณพร้อมส่ง 42 ตัน', Icons.inventory_2_outlined, MiddlemanPalette.info,
-          'แบ่งเป็น 1,400 กระสอบ'),
-      _DeliveryStat('ต้องตรวจสอบเอกสาร 2 รายการ', Icons.receipt_long_outlined,
-          MiddlemanPalette.warning, 'ใบอนุญาตขนย้าย และใบชั่งน้ำหนัก'),
-    ];
-
+  Widget _buildPlanForm() {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -54,177 +107,390 @@ class MiddlemanFactoryDeliveryPage extends StatelessWidget {
           BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
-      child: Column(
-        children: [
-          for (final stat in stats)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: stat.color.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(12),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: const [
+                Icon(Icons.local_shipping_outlined, color: MiddlemanPalette.success),
+                SizedBox(width: 8),
+                Text('วางแผนจัดส่งรอบใหม่',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'กำหนดปลายทาง รถบรรทุก และล็อตสินค้าที่จะจัดส่ง พร้อมแนบเลขอ้างอิงจากใบรับซื้อเพื่อให้โรงงานตรวจสอบย้อนกลับได้',
+              style: TextStyle(fontSize: 13, color: MiddlemanPalette.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _deliveryIdController,
+              decoration: InputDecoration(
+                labelText: 'รหัสรอบจัดส่ง',
+                hintText: 'เช่น DL-2024-036',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: const Color(0xFFF7F9FC),
+              ),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'กรอกรหัสรอบจัดส่ง' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _factoryController,
+              decoration: InputDecoration(
+                labelText: 'ปลายทาง/โรงงาน',
+                hintText: 'เช่น โรงงานนครราชสีมา',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: const Color(0xFFF7F9FC),
+              ),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'กรอกชื่อโรงงานปลายทาง' : null,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _truckController,
+                    decoration: InputDecoration(
+                      labelText: 'ทะเบียนรถบรรทุก',
+                      hintText: 'เช่น 82-4495',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: const Color(0xFFF7F9FC),
                     ),
-                    padding: const EdgeInsets.all(12),
-                    child: Icon(stat.icon, color: stat.color),
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'กรอกทะเบียนรถ' : null,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          stat.title,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          stat.detail,
-                          style: const TextStyle(fontSize: 12, color: MiddlemanPalette.textSecondary),
-                        ),
-                      ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _weightController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      labelText: 'น้ำหนักรวม (กก.)',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: const Color(0xFFF7F9FC),
                     ),
+                    validator: (value) {
+                      final parsed = double.tryParse(value ?? '');
+                      if (parsed == null || parsed <= 0) {
+                        return 'กรอกน้ำหนักที่ถูกต้อง';
+                      }
+                      return null;
+                    },
                   ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _ticketController,
+              decoration: InputDecoration(
+                labelText: 'เลขที่ใบรับซื้อที่เกี่ยวข้อง',
+                hintText: 'คั่นด้วยเครื่องหมายคอมม่า เช่น RC-2024-068,RC-2024-069',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: const Color(0xFFF7F9FC),
+              ),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'ระบุใบรับซื้ออย่างน้อย 1 รายการ' : null,
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('เวลาออกเดินทาง'),
+              subtitle: Text(_formatDateTime(_selectedDeparture)),
+              trailing: TextButton(
+                onPressed: _pickDateTime,
+                child: const Text('เลือกเวลา'),
               ),
             ),
-        ],
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _scheduleDelivery,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MiddlemanPalette.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.playlist_add_check),
+                label: const Text('บันทึกแผนจัดส่ง'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  List<Widget> _buildTrips() {
-    final trips = [
-      _DeliveryTrip(
-        name: 'เที่ยวที่ 1',
-        factory: 'โรงงานชัยภูมิ',
-        qrInfo: 'QR โรงงาน: CP-CHAI-001',
-        departure: 'ออกเดินทาง 08:30 น.',
-        status: 'ถึงปลายทางแล้ว 12:05 น.',
-        statusColor: MiddlemanPalette.success,
-      ),
-      _DeliveryTrip(
-        name: 'เที่ยวที่ 2',
-        factory: 'โรงงานขอนแก่น',
-        qrInfo: 'QR โรงงาน: CP-KKN-004',
-        departure: 'กำลังโหลดสินค้า (พร้อม 70%)',
-        status: 'ออกเดินทาง 15:30 น.',
-        statusColor: MiddlemanPalette.primary,
-      ),
-      _DeliveryTrip(
-        name: 'เที่ยวที่ 3',
-        factory: 'โรงงานลพบุรี',
-        qrInfo: 'QR โรงงาน: CP-LRI-009',
-        departure: 'เตรียมสินค้ารออบแห้งเสร็จ',
-        status: 'ต้องวางแผนคนขับสำรอง',
-        statusColor: MiddlemanPalette.warning,
-      ),
-    ];
+  Widget _buildDeliverySearch(int resultCount) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MiddlemanSearchField(
+          controller: _searchController,
+          hintText: 'ค้นหาด้วยรหัสรอบจัดส่ง โรงงาน หรือทะเบียนรถ',
+          onChanged: (value) => setState(() => _searchTerm = value.trim()),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _searchTerm.isEmpty
+              ? 'แสดงทั้งหมด $resultCount รายการ'
+              : 'ผลการค้นหา $resultCount รายการ',
+          style: const TextStyle(
+            fontSize: 12,
+            color: MiddlemanPalette.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<DeliverySchedule> _filterDeliveries(List<DeliverySchedule> deliveries) {
+    if (_searchTerm.isEmpty) {
+      return deliveries;
+    }
+    final query = _searchTerm.toLowerCase();
+    return deliveries
+        .where((delivery) {
+          final haystack =
+              '${delivery.deliveryId} ${delivery.factoryName} ${delivery.truckId}'.toLowerCase();
+          return haystack.contains(query);
+        })
+        .toList();
+  }
+
+  List<Widget> _buildDeliveryList(List<DeliverySchedule> deliveries,
+      {bool isCompleted = false}) {
+    if (deliveries.isEmpty) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+            ],
+          ),
+          child: Text(
+            isCompleted
+                ? 'ยังไม่มีรอบที่ส่งมอบแล้วในวันนี้'
+                : 'ไม่มีรอบจัดส่งในหมวดนี้',
+            style: const TextStyle(color: MiddlemanPalette.textSecondary),
+          ),
+        ),
+      ];
+    }
 
     return [
-      for (final trip in trips)
+      for (final delivery in deliveries)
         MiddlemanListTile(
-          leadingIcon: Icons.directions_car_filled,
-          iconColor: trip.statusColor,
-          title: '${trip.name} • ${trip.factory}',
-          subtitle: '${trip.qrInfo}\n${trip.departure}',
-          trailing: MiddlemanTag(label: trip.status, color: trip.statusColor),
+          leadingIcon: Icons.local_shipping,
+          iconColor: isCompleted
+              ? MiddlemanPalette.success
+              : delivery.status == DeliveryStatus.enRoute
+                  ? MiddlemanPalette.warning
+                  : MiddlemanPalette.info,
+          title: '${delivery.deliveryId} • ${delivery.factoryName}',
+          subtitle:
+              'รถ ${delivery.truckId}\nน้ำหนัก ${delivery.weightKg.toStringAsFixed(0)} กก. • ใบรับซื้อ ${delivery.ticketRefs.join(', ')}\nเวลา ${_formatDateTime(delivery.departureTime)}',
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (isCompleted)
+                const MiddlemanTag(
+                    label: 'ส่งมอบแล้ว', color: MiddlemanPalette.success)
+              else if (delivery.status == DeliveryStatus.scheduled)
+                ElevatedButton(
+                  onPressed: () =>
+                      _repository.updateDeliveryStatus(delivery, DeliveryStatus.enRoute),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MiddlemanPalette.warning,
+                    minimumSize: const Size(130, 36),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('เริ่มออกเดินทาง'),
+                )
+              else
+                ElevatedButton(
+                  onPressed: () =>
+                      _repository.updateDeliveryStatus(delivery, DeliveryStatus.delivered),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MiddlemanPalette.success,
+                    minimumSize: const Size(130, 36),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('เช็กอินส่งมอบ'),
+                ),
+              const SizedBox(height: 6),
+              Text(
+                _statusLabel(delivery.status),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: MiddlemanPalette.textSecondary,
+                ),
+              ),
+              TextButton(
+                onPressed: () => _confirmDeleteDelivery(delivery),
+                child: const Text(
+                  'ลบ',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+              ),
+            ],
+          ),
         ),
     ];
   }
 
-  Widget _buildDocumentChecklist() {
-    final documents = [
-      _DeliveryDocument('ใบส่งมอบสินค้า', true, 'สแกนและบันทึกเรียบร้อย'),
-      _DeliveryDocument('ใบรับรองผลการวัดความชื้น', true, 'แนบสำหรับเที่ยว 1 และ 2'),
-      _DeliveryDocument('ใบอนุญาตเคลื่อนย้ายผลผลิต', false, 'รอการอนุมัติจากกรมการค้าภายใน'),
-      _DeliveryDocument('ภาพถ่ายก่อนออกเดินทาง', false, 'ต้องถ่ายอัปโหลดก่อน 17:00 น.'),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
-        ],
-      ),
-      child: Column(
-        children: [
-          for (final doc in documents)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                children: [
-                  Icon(
-                    doc.completed ? Icons.check_circle : Icons.radio_button_unchecked,
-                    color: doc.completed ? MiddlemanPalette.success : MiddlemanPalette.warning,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          doc.title,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          doc.note,
-                          style: const TextStyle(fontSize: 12, color: MiddlemanPalette.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (!doc.completed)
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('อัปโหลด'),
-                    ),
-                ],
-              ),
-            ),
+  Future<void> _confirmDeleteDelivery(DeliverySchedule delivery) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ลบรอบจัดส่ง'),
+        content: Text('ยืนยันการลบ ${delivery.deliveryId} ไปยัง ${delivery.factoryName} หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('ยกเลิก'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('ลบรายการ'),
+          ),
         ],
       ),
     );
+    if (shouldDelete != true) {
+      return;
+    }
+    final success = _repository.deleteDelivery(delivery.deliveryId);
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่พบรอบจัดส่งในระบบ')),
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('ลบรอบจัดส่ง ${delivery.deliveryId} แล้ว')),
+    );
+    setState(() {});
   }
-}
 
-class _DeliveryStat {
-  final String title;
-  final IconData icon;
-  final Color color;
-  final String detail;
+  Future<void> _pickDateTime() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _selectedDeparture,
+      firstDate: DateTime.now().subtract(const Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
+    );
+    if (date == null) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_selectedDeparture),
+    );
+    if (time == null) return;
+    setState(() {
+      _selectedDeparture = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
+  }
 
-  const _DeliveryStat(this.title, this.icon, this.color, this.detail);
-}
+  void _scheduleDelivery() {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    final id = _deliveryIdController.text.trim();
+    final factory = _factoryController.text.trim();
+    final truck = _truckController.text.trim();
+    final weight = double.parse(_weightController.text.trim());
+    final tickets = _ticketController.text
+        .split(',')
+        .map((ref) => ref.trim())
+        .where((ref) => ref.isNotEmpty)
+        .toList();
 
-class _DeliveryTrip {
-  final String name;
-  final String factory;
-  final String qrInfo;
-  final String departure;
-  final String status;
-  final Color statusColor;
+    if (tickets.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ระบุเลขใบรับซื้ออย่างน้อย 1 รายการ')),
+      );
+      return;
+    }
 
-  const _DeliveryTrip({
-    required this.name,
-    required this.factory,
-    required this.qrInfo,
-    required this.departure,
-    required this.status,
-    required this.statusColor,
-  });
-}
+    FocusScope.of(context).unfocus();
+    final result = _repository.scheduleDelivery(
+      deliveryId: id,
+      factoryName: factory,
+      truckId: truck,
+      departureTime: _selectedDeparture,
+      weightKg: weight,
+      ticketRefs: tickets,
+    );
 
-class _DeliveryDocument {
-  final String title;
-  final bool completed;
-  final String note;
+    if (result == WorkflowMutationResult.ignored) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่สามารถบันทึกแผนจัดส่งได้ กรุณาตรวจสอบข้อมูล')),
+      );
+      return;
+    }
 
-  const _DeliveryDocument(this.title, this.completed, this.note);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          result == WorkflowMutationResult.created
+              ? 'บันทึกแผนจัดส่ง $id แล้ว'
+              : 'อัปเดตแผนจัดส่ง $id แล้ว',
+        ),
+      ),
+    );
+    _formKey.currentState?.reset();
+    _deliveryIdController.clear();
+    _factoryController.clear();
+    _truckController.clear();
+    _weightController.text = '15000';
+    _ticketController.clear();
+    setState(() {
+      _selectedDeparture = DateTime.now().add(const Duration(hours: 2));
+    });
+  }
+
+  String _formatDateTime(DateTime time) {
+    final date = '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
+    final hour = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    return '$date เวลา $hour น.';
+  }
+
+  String _statusLabel(DeliveryStatus status) {
+    switch (status) {
+      case DeliveryStatus.scheduled:
+        return 'รอออกเดินทาง';
+      case DeliveryStatus.enRoute:
+        return 'กำลังเดินทาง';
+      case DeliveryStatus.delivered:
+        return 'ส่งมอบแล้ว';
+    }
+  }
 }

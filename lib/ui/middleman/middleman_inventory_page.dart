@@ -39,23 +39,29 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
       animation: _repository,
       builder: (context, _) {
         final lots = _repository.inventoryLots;
-        final totalCapacity = lots.fold<double>(0, (value, lot) => value + lot.capacityTons);
-        final totalStored = lots.fold<double>(0, (value, lot) => value + lot.filledTons);
+        final totalCapacity =
+            lots.fold<double>(0, (value, lot) => value + lot.capacityTons);
+        final totalStored =
+            lots.fold<double>(0, (value, lot) => value + lot.filledTons);
         final avgTemp = lots.isEmpty
             ? 0
-            : lots.fold<double>(0, (value, lot) => value + lot.temperatureC) / lots.length;
+            : lots.fold<double>(0, (value, lot) => value + lot.temperatureC) /
+                lots.length;
         final avgHumidity = lots.isEmpty
             ? 0
-            : lots.fold<double>(0, (value, lot) => value + lot.humidity) / lots.length;
+            : lots.fold<double>(0, (value, lot) => value + lot.humidity) /
+                lots.length;
         final availablePercent = totalCapacity == 0
             ? 0
-            : ((totalCapacity - totalStored) / totalCapacity * 100).clamp(0, 100);
+            : ((totalCapacity - totalStored) / totalCapacity * 100)
+                .clamp(0, 100);
         final filteredLots = _filterLots(lots);
         final hasAnyLots = lots.isNotEmpty;
 
         return MiddlemanScreenScaffold(
           title: 'จัดการคลังสินค้า',
-          subtitle: 'วางแผนการหมุนเวียนสต็อก ดูสภาพแวดล้อม และแจ้งเตือนล็อตที่ต้องดูแล',
+          subtitle:
+              'วางแผนการหมุนเวียนสต็อก ดูสภาพแวดล้อม และแจ้งเตือนล็อตที่ต้องดูแล',
           actionChips: [
             MiddlemanTag(
               label: 'พื้นที่ว่าง ${availablePercent.toStringAsFixed(0)}%',
@@ -211,7 +217,10 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Text(
@@ -231,7 +240,10 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Column(
@@ -241,11 +253,12 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: MiddlemanPalette.primary.withOpacity(0.12),
+                      color: MiddlemanPalette.primary.withAlpha(20),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     padding: const EdgeInsets.all(10),
-                    child: const Icon(Icons.storage_rounded, color: MiddlemanPalette.primary),
+                    child: const Icon(Icons.storage_rounded,
+                        color: MiddlemanPalette.primary),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -274,7 +287,7 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
                     value: lot.locked,
                     onChanged: (value) =>
                         _repository.updateInventoryLot(lot, locked: value),
-                    activeColor: MiddlemanPalette.warning,
+                    activeThumbColor: MiddlemanPalette.warning,
                   ),
                 ],
               ),
@@ -329,7 +342,8 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+              color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -340,7 +354,8 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
             decoration: InputDecoration(
               labelText: 'ชื่อพื้นที่จัดเก็บ',
               hintText: 'เช่น Silo #3 หรือ คลังสำรองเหนือ',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
               fillColor: const Color(0xFFF7F9FC),
             ),
@@ -351,10 +366,12 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
               Expanded(
                 child: TextField(
                   controller: _capacityController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'ความจุ (ตัน)',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF7F9FC),
                   ),
@@ -364,10 +381,12 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
               Expanded(
                 child: TextField(
                   controller: _filledController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'ปริมาณปัจจุบัน (ตัน)',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF7F9FC),
                   ),
@@ -381,10 +400,12 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
               Expanded(
                 child: TextField(
                   controller: _temperatureController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'อุณหภูมิ (°C)',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF7F9FC),
                   ),
@@ -394,10 +415,12 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
               Expanded(
                 child: TextField(
                   controller: _humidityController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'ความชื้น (%)',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF7F9FC),
                   ),
@@ -445,9 +468,14 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
     final temp = double.tryParse(_temperatureController.text.trim());
     final humidity = double.tryParse(_humidityController.text.trim());
 
-    if (name.isEmpty || capacity == null || filled == null || temp == null || humidity == null) {
+    if (name.isEmpty ||
+        capacity == null ||
+        filled == null ||
+        temp == null ||
+        humidity == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรอกข้อมูลให้ครบถ้วนก่อนเพิ่มคลังสินค้า')), 
+        const SnackBar(
+            content: Text('กรอกข้อมูลให้ครบถ้วนก่อนเพิ่มคลังสินค้า')),
       );
       return;
     }
@@ -467,14 +495,17 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
     _humidityController.text = '60';
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('เพิ่ม ${name} เข้าระบบคลังแล้ว')),
+      SnackBar(content: Text('เพิ่ม $name เข้าระบบคลังแล้ว')),
     );
   }
 
   Future<void> _showUpdateDialog(InventoryLot lot) async {
-    final fillController = TextEditingController(text: lot.filledTons.toStringAsFixed(1));
-    final tempController = TextEditingController(text: lot.temperatureC.toStringAsFixed(1));
-    final humidityController = TextEditingController(text: lot.humidity.toStringAsFixed(0));
+    final fillController =
+        TextEditingController(text: lot.filledTons.toStringAsFixed(1));
+    final tempController =
+        TextEditingController(text: lot.temperatureC.toStringAsFixed(1));
+    final humidityController =
+        TextEditingController(text: lot.humidity.toStringAsFixed(0));
 
     await showDialog(
       context: context,
@@ -486,17 +517,21 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
             children: [
               TextField(
                 controller: fillController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'ปริมาณปัจจุบัน (ตัน)'),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration:
+                    const InputDecoration(labelText: 'ปริมาณปัจจุบัน (ตัน)'),
               ),
               TextField(
                 controller: tempController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'อุณหภูมิ (°C)'),
               ),
               TextField(
                 controller: humidityController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'ความชื้น (%)'),
               ),
             ],
@@ -510,10 +545,11 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
               onPressed: () {
                 final filled = double.tryParse(fillController.text.trim());
                 final temp = double.tryParse(tempController.text.trim());
-                final humidity = double.tryParse(humidityController.text.trim());
+                final humidity =
+                    double.tryParse(humidityController.text.trim());
                 if (filled == null || temp == null || humidity == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('กรอกข้อมูลตัวเลขให้ถูกต้อง')), 
+                    const SnackBar(content: Text('กรอกข้อมูลตัวเลขให้ถูกต้อง')),
                   );
                   return;
                 }
@@ -557,12 +593,12 @@ class _MiddlemanInventoryPageState extends State<MiddlemanInventoryPage> {
     }
     final success = _repository.removeInventoryLot(lot);
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
         const SnackBar(content: Text('ไม่สามารถลบพื้นที่จัดเก็บได้')),
       );
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
       SnackBar(content: Text('ลบ ${lot.siloName} แล้ว')),
     );
     setState(() {});

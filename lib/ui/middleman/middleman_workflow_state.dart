@@ -356,7 +356,7 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
         0, (value, tx) => value + tx.amount);
     final liquidityGap = pendingReceivableAmount - pendingExpenseAmount;
 
-    String _formatNumber(double value, {String unit = 'กก.'}) {
+    String formatNumber(double value, {String unit = 'กก.'}) {
       if (unit == 'กก.' && value >= 1000) {
         return '${(value / 1000).toStringAsFixed(1)} ตัน';
       }
@@ -369,7 +369,7 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       return '${value.toStringAsFixed(0)} $unit';
     }
 
-    String _formatCurrency(double value) {
+    String formatCurrency(double value) {
       if (value >= 1000000) {
         return '฿${(value / 1000000).toStringAsFixed(2)} ลบ.';
       }
@@ -389,10 +389,10 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       WorkflowInsight(
         title: 'การใช้โควต้ารับซื้อวันนี้',
         value: '${(quotaUsage * 100).toStringAsFixed(0)}%',
-        trendLabel: 'รับซื้อแล้ว ${_formatNumber(purchasedToday)}',
+        trendLabel: 'รับซื้อแล้ว ${formatNumber(purchasedToday)}',
         description: quotaUsage >= 0.9
             ? 'โควต้ากำลังเต็ม ควรประสานโรงงานเพื่อเปิดรอบรับเพิ่ม'
-            : 'ยังเหลือ ${_formatNumber(remainingQuota)} สำหรับการรับซื้อวันนี้',
+            : 'ยังเหลือ ${formatNumber(remainingQuota)} สำหรับการรับซื้อวันนี้',
         icon: Icons.speed,
         color: Colors.deepOrangeAccent,
         progress: quotaUsage,
@@ -430,7 +430,7 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       WorkflowInsight(
         title: 'สต็อกคลังสินค้า',
         value: '${(storageUtilization * 100).toStringAsFixed(0)}%',
-        trendLabel: 'พร้อมขาย ${_formatNumber(totalFilledTons * 1000)}',
+        trendLabel: 'พร้อมขาย ${formatNumber(totalFilledTons * 1000)}',
         description: storageUtilization >= 0.85
             ? 'พื้นที่เก็บใกล้เต็ม ควรเร่งกระจายล็อตออกสู่โรงงาน'
             : 'ยังเหลือพื้นที่ว่าง ${availableStorageTons.toStringAsFixed(1)} ตัน สำหรับรับเข้า',
@@ -442,9 +442,9 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       ),
       WorkflowInsight(
         title: 'สถานะการเงิน',
-        value: 'ค้างจ่าย ${_formatCurrency(pendingExpenseAmount)}',
+        value: 'ค้างจ่าย ${formatCurrency(pendingExpenseAmount)}',
         trendLabel: pendingReceivableAmount > 0
-            ? 'รอรับเงิน ${_formatCurrency(pendingReceivableAmount)}'
+            ? 'รอรับเงิน ${formatCurrency(pendingReceivableAmount)}'
             : 'ไม่มีรายรับที่รออยู่',
         description: liquidityGap < 0
             ? 'ยอดค้างจ่ายสูงกว่ายอดรอรับเงิน ควรเร่งทวงถามจากโรงงาน'
@@ -1220,7 +1220,7 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
 
   void _seedData() {
     _farmerQueue
-      ..addAll([
+      .addAll([
         FarmerQueueItem(
           farmerName: 'สหกรณ์บ้านหนองโน',
           village: 'หมู่ 8 ตำบลโนนแดง',

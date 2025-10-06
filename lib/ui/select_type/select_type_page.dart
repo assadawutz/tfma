@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -7,9 +9,9 @@ import '../login/login_page.dart';
 import '../../util/user_role.dart';
 
 class SelectTypePage extends StatefulWidget {
-  SelectTypePage({
-    Key? key,
-  }) : super(key: key);
+  const SelectTypePage({
+    super.key,
+  });
 
   @override
   _SelectTypePageState createState() => _SelectTypePageState();

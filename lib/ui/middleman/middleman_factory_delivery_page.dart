@@ -7,10 +7,12 @@ class MiddlemanFactoryDeliveryPage extends StatefulWidget {
   const MiddlemanFactoryDeliveryPage({super.key});
 
   @override
-  State<MiddlemanFactoryDeliveryPage> createState() => _MiddlemanFactoryDeliveryPageState();
+  State<MiddlemanFactoryDeliveryPage> createState() =>
+      _MiddlemanFactoryDeliveryPageState();
 }
 
-class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryPage> {
+class _MiddlemanFactoryDeliveryPageState
+    extends State<MiddlemanFactoryDeliveryPage> {
   final _formKey = GlobalKey<FormState>();
   final _deliveryIdController = TextEditingController();
   final _factoryController = TextEditingController();
@@ -41,17 +43,21 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
       animation: _repository,
       builder: (context, _) {
         final deliveries = _repository.deliveries;
-        final scheduled =
-            deliveries.where((delivery) => delivery.status == DeliveryStatus.scheduled).toList();
-        final enRoute =
-            deliveries.where((delivery) => delivery.status == DeliveryStatus.enRoute).toList();
-        final delivered =
-            deliveries.where((delivery) => delivery.status == DeliveryStatus.delivered).toList();
+        final scheduled = deliveries
+            .where((delivery) => delivery.status == DeliveryStatus.scheduled)
+            .toList();
+        final enRoute = deliveries
+            .where((delivery) => delivery.status == DeliveryStatus.enRoute)
+            .toList();
+        final delivered = deliveries
+            .where((delivery) => delivery.status == DeliveryStatus.delivered)
+            .toList();
         final filteredScheduled = _filterDeliveries(scheduled);
         final filteredEnRoute = _filterDeliveries(enRoute);
         final filteredDelivered = _filterDeliveries(delivered);
-        final resultCount =
-            filteredScheduled.length + filteredEnRoute.length + filteredDelivered.length;
+        final resultCount = filteredScheduled.length +
+            filteredEnRoute.length +
+            filteredDelivered.length;
 
         return MiddlemanScreenScaffold(
           title: 'จัดส่งโรงงาน',
@@ -104,7 +110,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+              color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Form(
@@ -114,7 +121,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
           children: [
             Row(
               children: const [
-                Icon(Icons.local_shipping_outlined, color: MiddlemanPalette.success),
+                Icon(Icons.local_shipping_outlined,
+                    color: MiddlemanPalette.success),
                 SizedBox(width: 8),
                 Text('วางแผนจัดส่งรอบใหม่',
                     style: TextStyle(fontWeight: FontWeight.w600)),
@@ -123,7 +131,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
             const SizedBox(height: 12),
             const Text(
               'กำหนดปลายทาง รถบรรทุก และล็อตสินค้าที่จะจัดส่ง พร้อมแนบเลขอ้างอิงจากใบรับซื้อเพื่อให้โรงงานตรวจสอบย้อนกลับได้',
-              style: TextStyle(fontSize: 13, color: MiddlemanPalette.textSecondary),
+              style: TextStyle(
+                  fontSize: 13, color: MiddlemanPalette.textSecondary),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -131,7 +140,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
               decoration: InputDecoration(
                 labelText: 'รหัสรอบจัดส่ง',
                 hintText: 'เช่น DL-2024-036',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
@@ -144,12 +154,14 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
               decoration: InputDecoration(
                 labelText: 'ปลายทาง/โรงงาน',
                 hintText: 'เช่น โรงงานนครราชสีมา',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'กรอกชื่อโรงงานปลายทาง' : null,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'กรอกชื่อโรงงานปลายทาง'
+                  : null,
             ),
             const SizedBox(height: 12),
             Row(
@@ -160,7 +172,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
                     decoration: InputDecoration(
                       labelText: 'ทะเบียนรถบรรทุก',
                       hintText: 'เช่น 82-4495',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       filled: true,
                       fillColor: const Color(0xFFF7F9FC),
                     ),
@@ -176,7 +189,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
                       labelText: 'น้ำหนักรวม (กก.)',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       filled: true,
                       fillColor: const Color(0xFFF7F9FC),
                     ),
@@ -196,13 +210,16 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
               controller: _ticketController,
               decoration: InputDecoration(
                 labelText: 'เลขที่ใบรับซื้อที่เกี่ยวข้อง',
-                hintText: 'คั่นด้วยเครื่องหมายคอมม่า เช่น RC-2024-068,RC-2024-069',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                hintText:
+                    'คั่นด้วยเครื่องหมายคอมม่า เช่น RC-2024-068,RC-2024-069',
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'ระบุใบรับซื้ออย่างน้อย 1 รายการ' : null,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'ระบุใบรับซื้ออย่างน้อย 1 รายการ'
+                  : null,
             ),
             const SizedBox(height: 12),
             ListTile(
@@ -263,13 +280,12 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
       return deliveries;
     }
     final query = _searchTerm.toLowerCase();
-    return deliveries
-        .where((delivery) {
-          final haystack =
-              '${delivery.deliveryId} ${delivery.factoryName} ${delivery.truckId}'.toLowerCase();
-          return haystack.contains(query);
-        })
-        .toList();
+    return deliveries.where((delivery) {
+      final haystack =
+          '${delivery.deliveryId} ${delivery.factoryName} ${delivery.truckId}'
+              .toLowerCase();
+      return haystack.contains(query);
+    }).toList();
   }
 
   List<Widget> _buildDeliveryList(List<DeliverySchedule> deliveries,
@@ -282,7 +298,10 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Text(
@@ -315,8 +334,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
                     label: 'ส่งมอบแล้ว', color: MiddlemanPalette.success)
               else if (delivery.status == DeliveryStatus.scheduled)
                 ElevatedButton(
-                  onPressed: () =>
-                      _repository.updateDeliveryStatus(delivery, DeliveryStatus.enRoute),
+                  onPressed: () => _repository.updateDeliveryStatus(
+                      delivery, DeliveryStatus.enRoute),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MiddlemanPalette.warning,
                     minimumSize: const Size(130, 36),
@@ -328,8 +347,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
                 )
               else
                 ElevatedButton(
-                  onPressed: () =>
-                      _repository.updateDeliveryStatus(delivery, DeliveryStatus.delivered),
+                  onPressed: () => _repository.updateDeliveryStatus(
+                      delivery, DeliveryStatus.delivered),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MiddlemanPalette.success,
                     minimumSize: const Size(130, 36),
@@ -365,7 +384,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('ลบรอบจัดส่ง'),
-        content: Text('ยืนยันการลบ ${delivery.deliveryId} ไปยัง ${delivery.factoryName} หรือไม่?'),
+        content: Text(
+            'ยืนยันการลบ ${delivery.deliveryId} ไปยัง ${delivery.factoryName} หรือไม่?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -384,12 +404,12 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
     }
     final success = _repository.deleteDelivery(delivery.deliveryId);
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
         const SnackBar(content: Text('ไม่พบรอบจัดส่งในระบบ')),
       );
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
       SnackBar(content: Text('ลบรอบจัดส่ง ${delivery.deliveryId} แล้ว')),
     );
     setState(() {});
@@ -404,7 +424,7 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
     );
     if (date == null) return;
     final time = await showTimePicker(
-      context: context,
+      context: mounted as BuildContext,
       initialTime: TimeOfDay.fromDateTime(_selectedDeparture),
     );
     if (time == null) return;
@@ -452,7 +472,8 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
 
     if (result == WorkflowMutationResult.ignored) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่สามารถบันทึกแผนจัดส่งได้ กรุณาตรวจสอบข้อมูล')),
+        const SnackBar(
+            content: Text('ไม่สามารถบันทึกแผนจัดส่งได้ กรุณาตรวจสอบข้อมูล')),
       );
       return;
     }
@@ -478,8 +499,10 @@ class _MiddlemanFactoryDeliveryPageState extends State<MiddlemanFactoryDeliveryP
   }
 
   String _formatDateTime(DateTime time) {
-    final date = '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
-    final hour = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    final date =
+        '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
+    final hour =
+        '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
     return '$date เวลา $hour น.';
   }
 

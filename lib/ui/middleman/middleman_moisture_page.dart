@@ -129,7 +129,7 @@ class _MiddlemanMoisturePageState extends State<MiddlemanMoisturePage> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedTicket,
+              initialValue: _selectedTicket,
               decoration: InputDecoration(
                 labelText: 'ใบรับซื้อ',
                 hintText: 'เลือกใบรับซื้อ',

@@ -133,7 +133,8 @@ class MiddlemanSummaryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+              color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Row(
@@ -141,7 +142,7 @@ class MiddlemanSummaryCard extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
             ),
             padding: const EdgeInsets.all(12),
@@ -221,7 +222,10 @@ class MiddlemanInsightCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+              BoxShadow(
+                  color: Color(0x14000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 6)),
             ],
           ),
           child: Padding(
@@ -234,7 +238,7 @@ class MiddlemanInsightCard extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.12),
+                        color: color.withAlpha(20),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.all(10),
@@ -324,7 +328,7 @@ class MiddlemanSection extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: MiddlemanPalette.primary.withOpacity(0.12),
+                color: MiddlemanPalette.primary.withAlpha(20),
                 borderRadius: BorderRadius.circular(10),
               ),
               padding: const EdgeInsets.all(8),
@@ -371,7 +375,8 @@ class MiddlemanListTile extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+              color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Row(
@@ -379,7 +384,7 @@ class MiddlemanListTile extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.12),
+              color: iconColor.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
             ),
             padding: const EdgeInsets.all(10),
@@ -433,7 +438,7 @@ class MiddlemanTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withAlpha(20),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
@@ -489,7 +494,7 @@ class MiddlemanActionButton extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: MiddlemanPalette.primary.withOpacity(0.12),
+                    color: MiddlemanPalette.primary.withAlpha(20),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(10),
@@ -563,7 +568,8 @@ class _MiddlemanSearchFieldState extends State<MiddlemanSearchField> {
       controller: widget.controller,
       onChanged: widget.onChanged,
       decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.search, color: MiddlemanPalette.textSecondary),
+        prefixIcon:
+            const Icon(Icons.search, color: MiddlemanPalette.textSecondary),
         suffixIcon: widget.controller.text.isEmpty
             ? null
             : IconButton(

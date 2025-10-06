@@ -89,7 +89,8 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+              color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Form(
@@ -102,7 +103,7 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: MiddlemanPalette.primary.withOpacity(0.12),
+                    color: MiddlemanPalette.primary.withAlpha(20),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(12),
@@ -116,13 +117,15 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
                     children: const [
                       Text(
                         'สแกนคิวอาร์โค้ดเกษตรกร',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 15),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'ใช้กล้องเพื่ออ่านคิวอาร์โค้ดจากแอปเกษตรกรแล้วตัดโควต้าอัตโนมัติ หากสแกนไม่ได้สามารถกรอกรหัสได้ที่แบบฟอร์มด้านล่าง',
-                        style:
-                            TextStyle(fontSize: 13, color: MiddlemanPalette.textSecondary),
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: MiddlemanPalette.textSecondary),
                       ),
                     ],
                   ),
@@ -256,7 +259,7 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _grade,
+              initialValue: _grade,
               decoration: InputDecoration(
                 labelText: 'เกรดสินค้า',
                 filled: true,
@@ -266,9 +269,9 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
                 ),
               ),
               items: const [
-                DropdownMenuItem(value: 'A', child: Text('เกรด A')), 
-                DropdownMenuItem(value: 'B', child: Text('เกรด B')), 
-                DropdownMenuItem(value: 'C', child: Text('เกรด C')), 
+                DropdownMenuItem(value: 'A', child: Text('เกรด A')),
+                DropdownMenuItem(value: 'B', child: Text('เกรด B')),
+                DropdownMenuItem(value: 'C', child: Text('เกรด C')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -306,7 +309,10 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: const Text(
@@ -357,10 +363,14 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
     final quotas = [
       _QuotaSummary('โควต้าประจำวัน', '60,000 กก.',
           'ใช้ไปแล้ว ${_repository.totalPurchasedToday.toStringAsFixed(0)} กก.'),
-      const _QuotaSummary('ราคารับซื้อเกรด A', '8.40 บาท/กก.', 'ความชื้นไม่เกิน 14%'),
-      const _QuotaSummary('ราคารับซื้อเกรด B', '7.10 บาท/กก.', 'ความชื้น 14-17%'),
-      const _QuotaSummary('ราคารับซื้อเกรด C', '6.40 บาท/กก.', 'ความชื้นมากกว่า 17%'),
-      const _QuotaSummary('กำลังคนประจำด่าน', '5 คน', 'พร้อมให้บริการทุกจุดชั่ง'),
+      const _QuotaSummary(
+          'ราคารับซื้อเกรด A', '8.40 บาท/กก.', 'ความชื้นไม่เกิน 14%'),
+      const _QuotaSummary(
+          'ราคารับซื้อเกรด B', '7.10 บาท/กก.', 'ความชื้น 14-17%'),
+      const _QuotaSummary(
+          'ราคารับซื้อเกรด C', '6.40 บาท/กก.', 'ความชื้นมากกว่า 17%'),
+      const _QuotaSummary(
+          'กำลังคนประจำด่าน', '5 คน', 'พร้อมให้บริการทุกจุดชั่ง'),
     ];
 
     return Container(
@@ -369,7 +379,8 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+              color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -442,7 +453,10 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Text(
@@ -497,7 +511,8 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
         return true;
       }
       final haystack =
-          '${ticket.ticketId} ${ticket.farmerName} ${ticket.village}'.toLowerCase();
+          '${ticket.ticketId} ${ticket.farmerName} ${ticket.village}'
+              .toLowerCase();
       return haystack.contains(query);
     }).toList();
   }
@@ -513,7 +528,9 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
       _grade = ticket.grade;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('นำข้อมูล ${ticket.ticketId} เข้าฟอร์มสำหรับแก้ไขแล้ว')),
+      SnackBar(
+          content:
+              Text('นำข้อมูล ${ticket.ticketId} เข้าฟอร์มสำหรับแก้ไขแล้ว')),
     );
   }
 
@@ -522,7 +539,8 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('ลบใบรับซื้อ'),
-        content: Text('ยืนยันการลบ ${ticket.ticketId} ของ ${ticket.farmerName} หรือไม่?'),
+        content: Text(
+            'ยืนยันการลบ ${ticket.ticketId} ของ ${ticket.farmerName} หรือไม่?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -541,16 +559,16 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
     }
     final success = _repository.deletePurchase(ticket.ticketId);
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่พบใบรับซื้อในระบบ')), 
+      ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
+        const SnackBar(content: Text('ไม่พบใบรับซื้อในระบบ')),
       );
       return;
     }
     if (_ticketIdController.text.trim() == ticket.ticketId) {
       _resetForm();
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('ลบใบรับซื้อ ${ticket.ticketId} แล้ว')), 
+    ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
+      SnackBar(content: Text('ลบใบรับซื้อ ${ticket.ticketId} แล้ว')),
     );
     setState(() {});
   }
@@ -569,7 +587,8 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
     }
     setState(() {
       _reservedQueue = farmer;
-      _ticketIdController.text = 'RC-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+      _ticketIdController.text =
+          'RC-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
       _farmerController.text = farmer.farmerName;
       _villageController.text = farmer.village;
       _weightController.text = farmer.remainingWeightKg.toStringAsFixed(0);
@@ -627,7 +646,8 @@ class _MiddlemanPurchasePageState extends State<MiddlemanPurchasePage> {
 
     if (result == WorkflowMutationResult.ignored) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่สามารถบันทึกใบรับซื้อได้ กรุณาตรวจสอบข้อมูล')),
+        const SnackBar(
+            content: Text('ไม่สามารถบันทึกใบรับซื้อได้ กรุณาตรวจสอบข้อมูล')),
       );
       return;
     }

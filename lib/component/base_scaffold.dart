@@ -53,12 +53,12 @@ class _BaseScaffoldState extends State<BaseScaffold> {
           Padding(
             padding: const EdgeInsets.only(top: 44, left: 16, right: 16),
             child: SingleChildScrollView(
+              controller: _scrollController,
               child: Column(
                 children: [
                   widget.child,
                 ],
               ),
-              controller: _scrollController,
             ),
           ),
         ],

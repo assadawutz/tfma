@@ -13,6 +13,7 @@ ios/Flutter/Flutter.podspec
 ios/Flutter/App.framework
 ios/.symlinks/
 ios/Pods/
+ios/Podfile.lock
 macos/Pods/
 windows/flutter/
 

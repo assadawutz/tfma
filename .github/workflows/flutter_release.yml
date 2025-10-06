@@ -42,7 +42,7 @@ jobs:
 
       # 7️⃣ Build iOS (no codesign)
       - name: Build iOS (no codesign)
-        run: flutter build ios
+        run: flutter build ios --no-codesign
 
       # 8️⃣ Archive artifacts
       - name: Upload artifacts

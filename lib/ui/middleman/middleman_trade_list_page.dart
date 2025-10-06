@@ -177,7 +177,7 @@ class _MiddlemanTradeListPageState extends State<MiddlemanTradeListPage> {
                 value: trade.reconciled,
                 onChanged: (value) =>
                     _repository.toggleTradeReconciled(trade, value),
-                activeColor: MiddlemanPalette.success,
+                activeThumbColor: MiddlemanPalette.success,
               ),
               const SizedBox(height: 4),
               Text(

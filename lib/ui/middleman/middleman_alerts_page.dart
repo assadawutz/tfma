@@ -40,17 +40,18 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
         final filteredAlerts = _filterAlerts(alerts);
         final baseCount = _severityFilter == null
             ? alerts.length
-            : alerts
-                .where((alert) => alert.severity == _severityFilter)
-                .length;
+            : alerts.where((alert) => alert.severity == _severityFilter).length;
 
         return MiddlemanScreenScaffold(
           title: 'แจ้งเตือนการเผาแปลง',
-          subtitle: 'เฝ้าระวังจุดความร้อนและแจ้งเตือนเกษตรกรเพื่อหยุดการเผาอย่างทันท่วงที',
+          subtitle:
+              'เฝ้าระวังจุดความร้อนและแจ้งเตือนเกษตรกรเพื่อหยุดการเผาอย่างทันท่วงที',
           actionChips: [
             MiddlemanTag(
               label: 'ต้องติดตาม $unresolved จุด',
-              color: unresolved > 0 ? MiddlemanPalette.warning : MiddlemanPalette.success,
+              color: unresolved > 0
+                  ? MiddlemanPalette.warning
+                  : MiddlemanPalette.success,
             ),
             MiddlemanTag(
               label: 'บันทึกทั้งหมด ${alerts.length} รายการ',
@@ -82,7 +83,8 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+              color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Form(
@@ -101,7 +103,8 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
             const SizedBox(height: 12),
             const Text(
               'หากทีมภาคสนามพบการเผาเพิ่มเติม สามารถบันทึกจุดเกิดเหตุและรายละเอียดเพื่อแจ้งเตือนทีมความปลอดภัยและเกษตรกรในเครือข่าย',
-              style: TextStyle(fontSize: 13, color: MiddlemanPalette.textSecondary),
+              style: TextStyle(
+                  fontSize: 13, color: MiddlemanPalette.textSecondary),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -109,29 +112,37 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
               decoration: InputDecoration(
                 labelText: 'สถานที่เกิดเหตุ',
                 hintText: 'เช่น ต.โนนแดง อ.เมือง',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
-              validator: (value) =>
-                  value == null || value.trim().isEmpty ? 'ระบุสถานที่เกิดเหตุ' : null,
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'ระบุสถานที่เกิดเหตุ'
+                  : null,
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _severity,
+              initialValue: _severity,
               decoration: InputDecoration(
                 labelText: 'ระดับความรุนแรง',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
               items: const [
-                DropdownMenuItem(value: 'สูง', child: Text('สูง - มีควันและไฟลุก')),
-                DropdownMenuItem(value: 'กลาง', child: Text('กลาง - มีควัน/แสงไฟเล็กน้อย')),
-                DropdownMenuItem(value: 'ต่ำ', child: Text('ต่ำ - พบกลิ่นไหม้/ร่องรอยก่อนเกิดเหตุ')),
+                DropdownMenuItem(
+                    value: 'สูง', child: Text('สูง - มีควันและไฟลุก')),
+                DropdownMenuItem(
+                    value: 'กลาง', child: Text('กลาง - มีควัน/แสงไฟเล็กน้อย')),
+                DropdownMenuItem(
+                    value: 'ต่ำ',
+                    child: Text('ต่ำ - พบกลิ่นไหม้/ร่องรอยก่อนเกิดเหตุ')),
               ],
               onChanged: (value) => setState(() => _severity = value ?? 'สูง'),
-              validator: (value) => value == null ? 'เลือกระดับความรุนแรง' : null,
+              validator: (value) =>
+                  value == null ? 'เลือกระดับความรุนแรง' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -140,7 +151,8 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
               decoration: InputDecoration(
                 labelText: 'รายละเอียดเพิ่มเติม',
                 hintText: 'เช่น พบการเผาเศษซากหลังเก็บเกี่ยว มีลมแรง',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
@@ -249,7 +261,10 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Text(
@@ -277,7 +292,7 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
               Switch(
                 value: alert.acknowledged,
                 onChanged: (value) => _toggleAlert(alert, value),
-                activeColor: MiddlemanPalette.success,
+                activeThumbColor: MiddlemanPalette.success,
               ),
               const SizedBox(height: 4),
               Text(
@@ -377,12 +392,12 @@ class _MiddlemanAlertsPageState extends State<MiddlemanAlertsPage> {
     }
     final success = _repository.deleteAlert(alert);
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
         const SnackBar(content: Text('ไม่สามารถลบแจ้งเตือนได้')),
       );
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
       SnackBar(content: Text('ลบแจ้งเตือน ${alert.location} แล้ว')),
     );
   }

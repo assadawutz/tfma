@@ -253,7 +253,7 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
                     contentPadding: EdgeInsets.zero,
                     title: const Text('บันทึกเป็นรายจ่าย'),
                     subtitle: const Text('ปิดสวิตช์เพื่อบันทึกเป็นรายรับ'),
-                    activeColor: MiddlemanPalette.warning,
+                    activeThumbColor: MiddlemanPalette.warning,
                   ),
                 ),
                 ElevatedButton.icon(
@@ -337,12 +337,12 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
     }
     final success = _repository.deleteFinanceTransaction(tx.transactionId);
     if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
         const SnackBar(content: Text('ไม่พบรายการในระบบ')),
       );
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(mounted as BuildContext).showSnackBar(
       SnackBar(content: Text('ลบรายการ ${tx.transactionId} แล้ว')),
     );
     setState(() {});
@@ -390,7 +390,7 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
                 value: tx.settled,
                 onChanged: (value) =>
                     _repository.toggleFinanceSettlement(tx, value),
-                activeColor: MiddlemanPalette.success,
+                activeThumbColor: MiddlemanPalette.success,
               ),
               const SizedBox(height: 4),
               Text(

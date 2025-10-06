@@ -142,7 +142,7 @@ class _MiddlemanProcessingPageState extends State<MiddlemanProcessingPage> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedBatchId,
+              initialValue: _selectedBatchId,
               items: [
                 for (final batch in batches)
                   DropdownMenuItem(

@@ -22,8 +22,9 @@ class MiddlemanDashboardPage extends StatelessWidget {
         final deliveries = repository.completedDeliveriesToday;
         final netBalance = repository.netBalance;
         final activities = repository.activityFeed.take(8).toList();
-        final pendingAlerts =
-            repository.burnAlerts.where((alert) => !alert.acknowledged).toList();
+        final pendingAlerts = repository.burnAlerts
+            .where((alert) => !alert.acknowledged)
+            .toList();
         final actionableAlerts = pendingAlerts.take(3).toList();
         final insights = repository.workflowInsights;
         final topInsights = insights.take(3).toList();
@@ -34,7 +35,8 @@ class MiddlemanDashboardPage extends StatelessWidget {
               'ตรวจสอบสถานะงานรวบรวมข้าวโพดและไปยังขั้นตอนถัดไปได้จากหน้าเดียว',
           actionChips: [
             MiddlemanTag(
-              label: 'สต็อกพร้อมขาย ${_formatWeight(repository.inventoryLots.fold<double>(0, (value, lot) => value + lot.filledTons * 1000))}',
+              label:
+                  'สต็อกพร้อมขาย ${_formatWeight(repository.inventoryLots.fold<double>(0, (value, lot) => value + lot.filledTons * 1000))}',
               color: MiddlemanPalette.success,
             ),
             MiddlemanTag(
@@ -42,7 +44,8 @@ class MiddlemanDashboardPage extends StatelessWidget {
               color: MiddlemanPalette.info,
             ),
             MiddlemanTag(
-              label: 'การแจ้งเตือน ${repository.burnAlerts.where((alert) => !alert.acknowledged).length} รายการ',
+              label:
+                  'การแจ้งเตือน ${repository.burnAlerts.where((alert) => !alert.acknowledged).length} รายการ',
               color: MiddlemanPalette.warning,
             ),
             MiddlemanTag(
@@ -66,7 +69,8 @@ class MiddlemanDashboardPage extends StatelessWidget {
                 const spacing = 12.0;
                 final itemWidth = columns == 1
                     ? constraints.maxWidth
-                    : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+                    : (constraints.maxWidth - spacing * (columns - 1)) /
+                        columns;
                 final summaries = [
                   MiddlemanSummaryCard(
                     title: 'รับซื้อวันนี้',
@@ -91,14 +95,17 @@ class MiddlemanDashboardPage extends StatelessWidget {
                     value: _formatWeight(processing),
                     icon: Icons.settings_suggest_outlined,
                     color: MiddlemanPalette.warning,
-                    caption: '${repository.processingBatches.where((batch) => batch.stage != ProcessingStage.completed).length} ล็อตอยู่ระหว่างดำเนินการ',
+                    caption:
+                        '${repository.processingBatches.where((batch) => batch.stage != ProcessingStage.completed).length} ล็อตอยู่ระหว่างดำเนินการ',
                   ),
                   MiddlemanSummaryCard(
                     title: 'พื้นที่จัดเก็บคงเหลือ',
-                    value: '${(100 - storageUsage).clamp(0, 100).toStringAsFixed(0)} %',
+                    value:
+                        '${(100 - storageUsage).clamp(0, 100).toStringAsFixed(0)} %',
                     icon: Icons.inventory_2_outlined,
                     color: MiddlemanPalette.info,
-                    caption: 'เฉลี่ยแต่ละคลังใช้ไป ${storageUsage.toStringAsFixed(0)}%',
+                    caption:
+                        'เฉลี่ยแต่ละคลังใช้ไป ${storageUsage.toStringAsFixed(0)}%',
                   ),
                   MiddlemanSummaryCard(
                     title: 'ส่งมอบสำเร็จ',
@@ -142,7 +149,8 @@ class MiddlemanDashboardPage extends StatelessWidget {
                   const spacing = 12.0;
                   final itemWidth = columns == 1
                       ? constraints.maxWidth
-                      : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+                      : (constraints.maxWidth - spacing * (columns - 1)) /
+                          columns;
                   return Wrap(
                     spacing: spacing,
                     runSpacing: spacing,
@@ -191,7 +199,8 @@ class MiddlemanDashboardPage extends StatelessWidget {
               title: 'ขั้นตอนงานวันนี้',
               icon: Icons.flag_outlined,
             ),
-            for (final step in middlemanFlowSteps.where((step) => step.isCoreStep))
+            for (final step
+                in middlemanFlowSteps.where((step) => step.isCoreStep))
               MiddlemanListTile(
                 leadingIcon: step.icon,
                 iconColor: step.color,
@@ -216,7 +225,8 @@ class MiddlemanDashboardPage extends StatelessWidget {
                 const spacing = 12.0;
                 final itemWidth = columns == 1
                     ? constraints.maxWidth
-                    : (constraints.maxWidth - spacing * (columns - 1)) / columns;
+                    : (constraints.maxWidth - spacing * (columns - 1)) /
+                        columns;
                 return Wrap(
                   spacing: spacing,
                   runSpacing: spacing,
@@ -235,52 +245,52 @@ class MiddlemanDashboardPage extends StatelessWidget {
                 );
               },
             ),
-          if (actionableAlerts.isNotEmpty) ...[
-            const MiddlemanSection(
-              title: 'แจ้งเตือนที่ต้องติดตาม',
-              icon: Icons.warning_amber_outlined,
-            ),
-            for (final alert in actionableAlerts)
-              MiddlemanListTile(
-                leadingIcon: Icons.local_fire_department,
-                iconColor: _alertColor(alert.severity),
-                title: alert.location,
-                subtitle: _formatAlertSubtitle(alert),
-                trailing: FilledButton.tonal(
-                  onPressed: () => repository.acknowledgeAlert(alert, true),
-                  child: const Text('รับทราบแล้ว'),
-                ),
+            if (actionableAlerts.isNotEmpty) ...[
+              const MiddlemanSection(
+                title: 'แจ้งเตือนที่ต้องติดตาม',
+                icon: Icons.warning_amber_outlined,
               ),
-            if (pendingAlerts.length > actionableAlerts.length)
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const MiddlemanAlertsPage(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.open_in_new),
-                  label: Text(
-                    'ดูแจ้งเตือนทั้งหมด ${pendingAlerts.length} รายการ',
+              for (final alert in actionableAlerts)
+                MiddlemanListTile(
+                  leadingIcon: Icons.local_fire_department,
+                  iconColor: _alertColor(alert.severity),
+                  title: alert.location,
+                  subtitle: _formatAlertSubtitle(alert),
+                  trailing: FilledButton.tonal(
+                    onPressed: () => repository.acknowledgeAlert(alert, true),
+                    child: const Text('รับทราบแล้ว'),
                   ),
                 ),
-              ),
-          ],
-          const MiddlemanSection(
-            title: 'ความเคลื่อนไหวล่าสุด',
-            icon: Icons.schedule_outlined,
-            trailing: Text(
-              'อัปเดตอัตโนมัติทุก 10 นาที',
-              style: TextStyle(
-                color: MiddlemanPalette.textSecondary,
-                fontSize: 12,
+              if (pendingAlerts.length > actionableAlerts.length)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MiddlemanAlertsPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.open_in_new),
+                    label: Text(
+                      'ดูแจ้งเตือนทั้งหมด ${pendingAlerts.length} รายการ',
+                    ),
+                  ),
+                ),
+            ],
+            const MiddlemanSection(
+              title: 'ความเคลื่อนไหวล่าสุด',
+              icon: Icons.schedule_outlined,
+              trailing: Text(
+                'อัปเดตอัตโนมัติทุก 10 นาที',
+                style: TextStyle(
+                  color: MiddlemanPalette.textSecondary,
+                  fontSize: 12,
+                ),
               ),
             ),
-          ),
-          _buildActivityTimeline(activities),
+            _buildActivityTimeline(activities),
           ],
         );
       },
@@ -298,7 +308,10 @@ class MiddlemanDashboardPage extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: const [
-                BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+                BoxShadow(
+                    color: Color(0x11000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 4)),
               ],
             ),
             child: const Text(
@@ -314,7 +327,10 @@ class MiddlemanDashboardPage extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: const [
-                BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+                BoxShadow(
+                    color: Color(0x11000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 4)),
               ],
             ),
             child: Row(
@@ -322,7 +338,7 @@ class MiddlemanDashboardPage extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: activity.color.withOpacity(0.12),
+                    color: activity.color.withAlpha(20),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(10),

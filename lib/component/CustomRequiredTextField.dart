@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 import '../util/color.dart';
@@ -16,13 +18,13 @@ class CustomTextField extends StatelessWidget {
   final bool requiredField;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.hintText,
     this.obscureText = false,
     this.controller,
     this.validationType = ValidationType.normal,
     this.requiredField = true,
-  }) : super(key: key);
+  });
 
   String? _validate(String? value) {
     if (requiredField && (value == null || value.isEmpty)) {

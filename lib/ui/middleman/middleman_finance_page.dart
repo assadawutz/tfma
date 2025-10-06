@@ -49,7 +49,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
 
         return MiddlemanScreenScaffold(
           title: 'การเงินและการชำระเงิน',
-          subtitle: 'ยืนยันการจ่ายเงินให้เกษตรกรและติดตามการรับชำระจากโรงงานแบบโปร่งใส',
+          subtitle:
+              'ยืนยันการจ่ายเงินให้เกษตรกรและติดตามการรับชำระจากโรงงานแบบโปร่งใส',
           actionChips: [
             MiddlemanTag(
               label: 'รายรับ ${_formatCurrency(incomes)}',
@@ -95,7 +96,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+              color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6)),
         ],
       ),
       child: Column(
@@ -105,7 +107,7 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: MiddlemanPalette.primary.withOpacity(0.12),
+                  color: MiddlemanPalette.primary.withAlpha(40),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding: const EdgeInsets.all(12),
@@ -119,7 +121,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
                   children: [
                     const Text(
                       'สรุปสถานะการเงิน',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -134,15 +137,19 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
               ),
               MiddlemanTag(
                 label: balance >= 0 ? 'สภาพคล่องดี' : 'ควบคุมค่าใช้จ่าย',
-                color: balance >= 0 ? MiddlemanPalette.success : MiddlemanPalette.warning,
+                color: balance >= 0
+                    ? MiddlemanPalette.success
+                    : MiddlemanPalette.warning,
               ),
             ],
           ),
           const SizedBox(height: 16),
           LinearProgressIndicator(
-            value: progress,
+            value: progress.toDouble(),
             backgroundColor: const Color(0xFFE0E6EE),
-            color: balance >= 0 ? MiddlemanPalette.success : MiddlemanPalette.warning,
+            color: balance >= 0
+                ? MiddlemanPalette.success
+                : MiddlemanPalette.warning,
             minHeight: 10,
             borderRadius: BorderRadius.circular(8),
           ),
@@ -151,9 +158,11 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('รายจ่าย ${_formatCurrency(expenses)}',
-                  style: const TextStyle(color: MiddlemanPalette.textSecondary)),
+                  style:
+                      const TextStyle(color: MiddlemanPalette.textSecondary)),
               Text('รายรับ ${_formatCurrency(incomes)}',
-                  style: const TextStyle(color: MiddlemanPalette.textSecondary)),
+                  style:
+                      const TextStyle(color: MiddlemanPalette.textSecondary)),
             ],
           ),
         ],
@@ -169,7 +178,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+              color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Form(
@@ -182,12 +192,14 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
               decoration: InputDecoration(
                 labelText: 'รายละเอียดรายการ',
                 hintText: 'เช่น ชำระเงินรับซื้อ RC-2024-074',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF7F9FC),
               ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'ระบุรายละเอียดรายการ' : null,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'ระบุรายละเอียดรายการ'
+                  : null,
             ),
             const SizedBox(height: 12),
             Row(
@@ -195,10 +207,12 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
                 Expanded(
                   child: TextFormField(
                     controller: _amountController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
                       labelText: 'จำนวนเงิน (บาท)',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       filled: true,
                       fillColor: const Color(0xFFF7F9FC),
                     ),
@@ -217,12 +231,14 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
                     controller: _counterpartyController,
                     decoration: InputDecoration(
                       labelText: 'คู่สัญญา/ผู้รับเงิน',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       filled: true,
                       fillColor: const Color(0xFFF7F9FC),
                     ),
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'กรอกชื่อคู่สัญญา' : null,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'กรอกชื่อคู่สัญญา'
+                        : null,
                   ),
                 ),
               ],
@@ -301,7 +317,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('ลบรายการเงิน'),
-        content: Text('ยืนยันการลบ ${tx.transactionId} (${tx.description}) หรือไม่?'),
+        content: Text(
+            'ยืนยันการลบ ${tx.transactionId} (${tx.description}) หรือไม่?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -321,12 +338,12 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
     final success = _repository.deleteFinanceTransaction(tx.transactionId);
     if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่พบรายการในระบบ')), 
+        const SnackBar(content: Text('ไม่พบรายการในระบบ')),
       );
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('ลบรายการ ${tx.transactionId} แล้ว')), 
+      SnackBar(content: Text('ลบรายการ ${tx.transactionId} แล้ว')),
     );
     setState(() {});
   }
@@ -340,7 +357,10 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(color: Color(0x11000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Text(
@@ -357,7 +377,9 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
       for (final tx in transactions)
         MiddlemanListTile(
           leadingIcon: tx.isExpense ? Icons.south_west : Icons.north_east,
-          iconColor: tx.isExpense ? MiddlemanPalette.warning : MiddlemanPalette.success,
+          iconColor: tx.isExpense
+              ? MiddlemanPalette.warning
+              : MiddlemanPalette.success,
           title: '${tx.transactionId} • ${tx.counterparty}',
           subtitle:
               '${_formatCurrency(tx.amount)} • ${_formatDateTime(tx.timestamp)}\n${tx.description}',
@@ -400,7 +422,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
     final counterparty = _counterpartyController.text.trim();
 
     FocusScope.of(context).unfocus();
-    final id = 'FIN-${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}';
+    final id =
+        'FIN-${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}';
     final result = _repository.recordFinanceTransaction(
       transactionId: id,
       description: description,
@@ -411,7 +434,8 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
 
     if (result == WorkflowMutationResult.ignored) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่สามารถบันทึกธุรกรรมได้ กรุณาตรวจสอบข้อมูล')),
+        const SnackBar(
+            content: Text('ไม่สามารถบันทึกธุรกรรมได้ กรุณาตรวจสอบข้อมูล')),
       );
       return;
     }
@@ -440,8 +464,10 @@ class _MiddlemanFinancePageState extends State<MiddlemanFinancePage> {
   }
 
   String _formatDateTime(DateTime time) {
-    final date = '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
-    final hour = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    final date =
+        '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
+    final hour =
+        '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
     return '$date • $hour น.';
   }
 }

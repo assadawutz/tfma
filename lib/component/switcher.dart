@@ -29,9 +29,8 @@ class _ToggleSwitcherState extends State<ToggleSwitcher> {
           // ✅ แถบพื้นหลังแบบเลื่อน
           AnimatedAlign(
             duration: const Duration(milliseconds: 250),
-            alignment: isPlantSelected
-                ? Alignment.centerLeft
-                : Alignment.centerRight,
+            alignment:
+                isPlantSelected ? Alignment.centerLeft : Alignment.centerRight,
             child: Container(
               width: (MediaQuery.of(context).size.width - 48) / 2,
               height: 40,

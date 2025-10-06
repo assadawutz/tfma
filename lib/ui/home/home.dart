@@ -5,10 +5,10 @@ import '../area/area_page.dart';
 import '../product/create_product_page.dart';
 
 class HomePage extends StatefulWidget {
-  var routeName = 'home';
+  final String routeName;
 
   // final String filePath;
-  HomePage({Key? key, required this.routeName}) : super(key: key);
+  const HomePage({super.key, required this.routeName});
 
   // HomePage({super.key, required this.routeName});
 

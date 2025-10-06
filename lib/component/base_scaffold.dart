@@ -36,28 +36,32 @@ class _BaseScaffoldState extends State<BaseScaffold> {
       backgroundColor: widget.backgroundColor,
       appBar: widget.appBar,
       bottomNavigationBar: widget.bottomNavigationBar,
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Stack(
-          children: [
-            // พื้นหลังรูปด้านบน
-            SizedBox(
-              height: 100,
-              width: double.infinity,
-              child: widget.headerBackground ??
-                  Image.asset(
-                    'assets/images/halfcircle.png',
-                    fit: BoxFit.cover,
-                  ),
-            ),
+      body: Stack(
+        children: [
+          // พื้นหลังรูปด้านบน
+          SizedBox(
+            height: 150,
+            width: double.infinity,
+            child: widget.headerBackground ??
+                Image.asset(
+                  'assets/images/halfcircle.png',
+                  fit: BoxFit.cover,
+                ),
+          ),
 
-            // เนื้อหาในแต่ละหน้า
-            Padding(
-              padding: const EdgeInsets.only(top: 34, left: 16, right: 16),
-              child: widget.child,
+          // เนื้อหาในแต่ละหน้า
+          Padding(
+            padding: const EdgeInsets.only(top: 44, left: 16, right: 16),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  widget.child,
+                ],
+              ),
+              controller: _scrollController,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

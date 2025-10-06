@@ -332,26 +332,28 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
         : (purchasedToday / dailyQuotaKg).clamp(0.0, 1.0);
     final highMoistureCount = highMoistureTickets.length;
     final average = averageMoisture;
-    final enRoute =
-        _deliveries.where((delivery) => delivery.status == DeliveryStatus.enRoute).length;
-    final scheduled =
-        _deliveries.where((delivery) => delivery.status == DeliveryStatus.scheduled).length;
+    final enRoute = _deliveries
+        .where((delivery) => delivery.status == DeliveryStatus.enRoute)
+        .length;
+    final scheduled = _deliveries
+        .where((delivery) => delivery.status == DeliveryStatus.scheduled)
+        .length;
     final overdueCount = overdueDeliveries.length;
     final completedToday = completedDeliveriesToday;
     final totalDeliveries = _deliveries.length;
 
-    final totalCapacityTons =
-        _inventoryLots.fold<double>(0, (value, lot) => value + lot.capacityTons);
+    final totalCapacityTons = _inventoryLots.fold<double>(
+        0, (value, lot) => value + lot.capacityTons);
     final totalFilledTons =
         _inventoryLots.fold<double>(0, (value, lot) => value + lot.filledTons);
     final storageUtilization = totalCapacityTons <= 0
         ? 0.0
         : (totalFilledTons / totalCapacityTons).clamp(0.0, 1.0);
 
-    final pendingExpenseAmount = pendingExpenseTransactions
-        .fold<double>(0, (value, tx) => value + tx.amount);
-    final pendingReceivableAmount = pendingReceivableTransactions
-        .fold<double>(0, (value, tx) => value + tx.amount);
+    final pendingExpenseAmount = pendingExpenseTransactions.fold<double>(
+        0, (value, tx) => value + tx.amount);
+    final pendingReceivableAmount = pendingReceivableTransactions.fold<double>(
+        0, (value, tx) => value + tx.amount);
     final liquidityGap = pendingReceivableAmount - pendingExpenseAmount;
 
     String _formatNumber(double value, {String unit = 'กก.'}) {
@@ -397,7 +399,9 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       ),
       WorkflowInsight(
         title: 'คุณภาพค่าความชื้น',
-        value: average != null ? '${average.toStringAsFixed(1)}%' : 'ยังไม่มีข้อมูล',
+        value: average != null
+            ? '${average.toStringAsFixed(1)}%'
+            : 'ยังไม่มีข้อมูล',
         trendLabel: highMoistureCount > 0
             ? 'พบความชื้นเกิน 14% $highMoistureCount ล็อต'
             : 'ทุกล็อตอยู่ในเกณฑ์มาตรฐาน',
@@ -521,7 +525,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
     }
     final seller =
         farmerName.trim().isEmpty ? 'ไม่ระบุผู้ขาย' : farmerName.trim();
-    final villageName = village.trim().isEmpty ? 'ไม่ระบุพื้นที่' : village.trim();
+    final villageName =
+        village.trim().isEmpty ? 'ไม่ระบุพื้นที่' : village.trim();
     final now = DateTime.now();
     final existingPurchaseIndex =
         _purchases.indexWhere((ticket) => ticket.ticketId == id);
@@ -563,8 +568,9 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
         batchId: _batchIdFromTicket(ticketId),
         originTicketId: id,
         weightKg: weightKg,
-        location:
-            result == WorkflowMutationResult.created ? 'ลานตากหลัก' : preservedLocation,
+        location: result == WorkflowMutationResult.created
+            ? 'ลานตากหลัก'
+            : preservedLocation,
         stage: result == WorkflowMutationResult.created
             ? ProcessingStage.receiving
             : preservedStage,
@@ -600,15 +606,15 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
   }
 
   bool deletePurchase(String ticketId) {
-    final index = _purchases.indexWhere((ticket) => ticket.ticketId == ticketId);
+    final index =
+        _purchases.indexWhere((ticket) => ticket.ticketId == ticketId);
     if (index == -1) {
       return false;
     }
     final removedTicket = _purchases.removeAt(index);
 
     _moistureLogs.removeWhere((log) => log.ticketId == ticketId);
-    _processingBatches
-        .removeWhere((batch) => batch.originTicketId == ticketId);
+    _processingBatches.removeWhere((batch) => batch.originTicketId == ticketId);
 
     final removedDeliveries = <DeliverySchedule>[];
     for (final delivery in _deliveries) {
@@ -622,8 +628,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       _tradeRecords.removeWhere((trade) =>
           trade.type == TradeType.sale &&
           trade.referenceId == delivery.deliveryId);
-      _activityFeed
-          .removeWhere((activity) => activity.referenceId == delivery.deliveryId);
+      _activityFeed.removeWhere(
+          (activity) => activity.referenceId == delivery.deliveryId);
     }
 
     _tradeRecords.removeWhere((trade) =>
@@ -678,7 +684,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       return;
     }
     final safeMoisture = moisture.clamp(0, 100).toDouble();
-    final inspectorName = inspector.trim().isEmpty ? 'ไม่ระบุผู้ตรวจ' : inspector.trim();
+    final inspectorName =
+        inspector.trim().isEmpty ? 'ไม่ระบุผู้ตรวจ' : inspector.trim();
     final now = DateTime.now();
     final log = MoistureLog(
       ticketId: id,
@@ -830,8 +837,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
     if (existingIndex != -1) {
       final existing = _deliveries.removeAt(existingIndex);
       preservedStatus = existing.status;
-      _tradeRecords.removeWhere((trade) =>
-          trade.type == TradeType.sale && trade.referenceId == id);
+      _tradeRecords.removeWhere(
+          (trade) => trade.type == TradeType.sale && trade.referenceId == id);
     }
 
     final result = existingIndex == -1
@@ -890,8 +897,7 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
     final removed = _deliveries.removeAt(index);
     _tradeRecords.removeWhere((trade) =>
         trade.type == TradeType.sale && trade.referenceId == deliveryId);
-    _activityFeed
-        .removeWhere((activity) => activity.referenceId == deliveryId);
+    _activityFeed.removeWhere((activity) => activity.referenceId == deliveryId);
     _pushActivity(
       WorkflowActivity(
         title: 'ยกเลิกรอบจัดส่ง ${removed.deliveryId}',
@@ -1020,15 +1026,14 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       safeFilled = capacityTons;
     }
     final safeTemperature = temperatureC.isFinite ? temperatureC : 0;
-    final safeHumidity = humidity.isFinite
-        ? humidity.clamp(0, 100).toDouble()
-        : 0;
+    final safeHumidity =
+        humidity.isFinite ? humidity.clamp(0, 100).toDouble() : 0;
     final lot = InventoryLot(
       siloName: siloName,
       capacityTons: capacityTons,
-      filledTons: safeFilled,
-      temperatureC: safeTemperature,
-      humidity: safeHumidity,
+      filledTons: safeFilled.toDouble(),
+      temperatureC: safeTemperature.toDouble(),
+      humidity: safeHumidity.toDouble(),
       lastInspection: DateTime.now(),
     );
     _inventoryLots.insert(0, lot);
@@ -1036,7 +1041,10 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
   }
 
   void updateInventoryLot(InventoryLot lot,
-      {double? filledTons, double? temperatureC, double? humidity, bool? locked}) {
+      {double? filledTons,
+      double? temperatureC,
+      double? humidity,
+      bool? locked}) {
     if (filledTons != null) {
       var safeFilled = filledTons.isFinite ? filledTons : lot.filledTons;
       if (safeFilled < 0) {
@@ -1047,7 +1055,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       lot.filledTons = safeFilled;
     }
     if (temperatureC != null) {
-      lot.temperatureC = temperatureC.isFinite ? temperatureC : lot.temperatureC;
+      lot.temperatureC =
+          temperatureC.isFinite ? temperatureC : lot.temperatureC;
     }
     if (humidity != null) {
       if (humidity.isFinite) {
@@ -1095,7 +1104,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
     if (id.isEmpty) {
       return WorkflowMutationResult.ignored;
     }
-    final detail = description.trim().isEmpty ? 'ไม่ระบุรายการ' : description.trim();
+    final detail =
+        description.trim().isEmpty ? 'ไม่ระบุรายการ' : description.trim();
     final partner =
         counterparty.trim().isEmpty ? 'ไม่ระบุคู่ค้า' : counterparty.trim();
     final existingIndex = _financeTransactions
@@ -1117,15 +1127,14 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       timestamp: DateTime.now(),
       counterparty: partner,
       isExpense: isExpense,
-      settled:
-          result == WorkflowMutationResult.created ? false : preservedSettlement,
+      settled: result == WorkflowMutationResult.created
+          ? false
+          : preservedSettlement,
     );
     _financeTransactions.insert(0, tx);
     _pushActivity(
       WorkflowActivity(
-        title: isExpense
-            ? 'จ่ายเงิน $partner'
-            : 'รับเงินจาก $partner',
+        title: isExpense ? 'จ่ายเงิน $partner' : 'รับเงินจาก $partner',
         detail: '${amount.toStringAsFixed(2)} บาท - $detail',
         icon: isExpense ? Icons.payments : Icons.account_balance_wallet,
         color: isExpense ? Colors.redAccent : Colors.teal,
@@ -1200,7 +1209,8 @@ class MiddlemanWorkflowRepository extends ChangeNotifier {
       return 'PR-$fallback';
     }
     final suffixLength = cleaned.length >= 3 ? 3 : cleaned.length;
-    final suffix = cleaned.substring(cleaned.length - suffixLength).padLeft(3, '0');
+    final suffix =
+        cleaned.substring(cleaned.length - suffixLength).padLeft(3, '0');
     return 'PR-$suffix';
   }
 

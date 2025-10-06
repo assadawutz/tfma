@@ -38,11 +38,11 @@ jobs:
 
       # 6️⃣ Build Android APK
       - name: Build Android release
-        run: flutter build apk --release
+        run: flutter build apk
 
       # 7️⃣ Build iOS (no codesign)
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios
 
       # 8️⃣ Archive artifacts
       - name: Upload artifacts

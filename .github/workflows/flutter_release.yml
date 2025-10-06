@@ -15,7 +15,7 @@ jobs:
     steps:
       # 1️⃣ Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # 2️⃣ Setup Flutter
       - name: Set up Flutter

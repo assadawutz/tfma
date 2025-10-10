@@ -52,8 +52,11 @@ jobs:
           pod repo update
           pod install
 
-      - name: Build release IPA (no codesign)
-        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist --no-codesign
+      - name: Build release IPA
+        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+
+      - name: Build release iOS
+        run: flutter build ios --release --export-options-plist=ios/ExportOptions.plist
 
       - name: Package IPA artifact
         run: |

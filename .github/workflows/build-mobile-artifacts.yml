@@ -55,6 +55,36 @@ jobs:
       - name: Build release IPA (no codesign)
         run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist --no-codesign
 
+      - name: Package IPA artifact
+        run: |
+          set -euo pipefail
+
+          IPA_DIR="build/ios/ipa"
+          PAYLOAD_DIR="$IPA_DIR/Payload"
+          ARCHIVE_APP="build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app"
+          IPHONEOS_APP="build/ios/iphoneos/Runner.app"
+
+          if [ -d "$ARCHIVE_APP" ]; then
+            APP_PATH="$ARCHIVE_APP"
+          elif [ -d "$IPHONEOS_APP" ]; then
+            APP_PATH="$IPHONEOS_APP"
+          else
+            echo "Runner.app not found in archive or iphoneos build outputs" >&2
+            exit 1
+          fi
+
+          rm -rf "$PAYLOAD_DIR"
+          mkdir -p "$PAYLOAD_DIR"
+          cp -R "$APP_PATH" "$PAYLOAD_DIR/"
+
+          (
+            cd "$IPA_DIR"
+            rm -f tfma-ios.ipa
+            zip -r tfma-ios.ipa Payload
+          )
+
+          rm -rf "$PAYLOAD_DIR"
+
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:

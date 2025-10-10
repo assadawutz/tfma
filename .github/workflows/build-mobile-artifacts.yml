@@ -1,0 +1,63 @@
+name: Build mobile artifacts
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build_android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfma-android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+  build_ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: |
+          pod repo update
+          pod install
+
+      - name: Build release IPA (no codesign)
+        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist --no-codesign
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfma-ios-ipa
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error

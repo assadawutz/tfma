@@ -36,7 +36,7 @@ cd ios
 pod install
 cd ..
 flutter build ipa --release --export-options-plist=ios/ExportOptions.plist --no-codesign
-# Output: build/ios/ipa/tfma-ios.ipa (automatically packaged if Flutter skips IPA export)
+# Output: build/ios/ipa/Runner.ipa
 ```
 
 ## Automated Builds
@@ -48,7 +48,7 @@ Each job performs the following high-level steps:
 1. Checks out the repository.
 2. Installs Flutter on the requested platform.
 3. Resolves Dart and Flutter package dependencies.
-4. Builds a release artifact (`app-release.apk`) and normalizes the unsigned IPA output, packaging it into `tfma-ios.ipa` when Flutter does not export one automatically.
+4. Builds a release artifact (`app-release.apk` or `Runner.ipa`).
 5. Uploads the resulting file as a workflow artifact you can download from the GitHub Actions run summary page.
 
 This approach keeps large binary files out of the Git history while still providing easily accessible release bundles.

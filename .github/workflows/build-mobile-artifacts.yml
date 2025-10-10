@@ -55,43 +55,9 @@ jobs:
       - name: Build release IPA (no codesign)
         run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist --no-codesign
 
-      - name: Package unsigned IPA artifact
-        run: |
-          set -euo pipefail
-          OUTPUT_DIR="build/ios/ipa"
-          TARGET_NAME="tfma-ios.ipa"
-          TARGET_PATH="${OUTPUT_DIR}/${TARGET_NAME}"
-
-          mkdir -p "${OUTPUT_DIR}"
-
-          if ls "${OUTPUT_DIR}"/*.ipa >/dev/null 2>&1; then
-            SOURCE_IPA="$(ls "${OUTPUT_DIR}"/*.ipa | head -n1)"
-            if [ "${SOURCE_IPA}" != "${TARGET_PATH}" ]; then
-              cp "${SOURCE_IPA}" "${TARGET_PATH}"
-            fi
-            exit 0
-          fi
-
-          APP_PATH="build/ios/iphoneos/Runner.app"
-          if [ ! -d "${APP_PATH}" ]; then
-            echo "::error::Runner.app not found at ${APP_PATH}"
-            exit 1
-          fi
-
-          PAYLOAD_DIR="${OUTPUT_DIR}/Payload"
-          rm -rf "${PAYLOAD_DIR}"
-          mkdir -p "${PAYLOAD_DIR}"
-          cp -R "${APP_PATH}" "${PAYLOAD_DIR}/"
-
-          pushd "${OUTPUT_DIR}" >/dev/null
-          zip -qry "${TARGET_NAME}" Payload
-          popd >/dev/null
-
-          rm -rf "${PAYLOAD_DIR}"
-
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfma-ios-ipa
-          path: build/ios/ipa/tfma-ios.ipa
+          path: build/ios/ipa/*.ipa
           if-no-files-found: error

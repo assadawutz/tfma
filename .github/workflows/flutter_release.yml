@@ -1,78 +1,78 @@
-name: Flutter Build & Release
+# name: Flutter Build & Release
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-permissions:
-  contents: write  # เพื่อให้ workflow สร้าง GitHub Release ได้
+# permissions:
+#   contents: write  # เพื่อให้ workflow สร้าง GitHub Release ได้
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      # 1️⃣ Checkout code
-      - name: Checkout repository
-        uses: actions/checkout@v5
+#     steps:
+#       # 1️⃣ Checkout code
+#       - name: Checkout repository
+#         uses: actions/checkout@v5
 
-      # 2️⃣ Setup Flutter
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+#       # 2️⃣ Setup Flutter
+#       - name: Set up Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           channel: stable
+#           cache: true
 
-      # 3️⃣ Get dependencies
-      - name: Install dependencies
-        run: flutter pub get
+#       # 3️⃣ Get dependencies
+#       - name: Install dependencies
+#         run: flutter pub get
 
-      # 4️⃣ Analyze (ไม่หยุดถ้ามี warning)
-      - name: Analyze code
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
+#       # 4️⃣ Analyze (ไม่หยุดถ้ามี warning)
+#       - name: Analyze code
+#         run: flutter analyze --no-fatal-infos --no-fatal-warnings || true
 
-      # 5️⃣ Run tests (ข้าม error)
-      - name: Run tests
-        run: flutter test --no-pub || true
+#       # 5️⃣ Run tests (ข้าม error)
+#       - name: Run tests
+#         run: flutter test --no-pub || true
 
-      # 6️⃣ Build Android APK
-      - name: Build Android release
-        run: flutter build apk
+#       # 6️⃣ Build Android APK
+#       - name: Build Android release
+#         run: flutter build apk
 
-      # 7️⃣ Build iOS (no codesign)
-      - name: Build iOS (no codesign)
-        run: flutter build ios --no-codesign
+#       # 7️⃣ Build iOS (no codesign)
+#       - name: Build iOS (no codesign)
+#         run: flutter build ios --no-codesign
 
-      # 8️⃣ Archive artifacts
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: flutter-builds
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/ios/iphoneos
+#       # 8️⃣ Archive artifacts
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: flutter-builds
+#           path: |
+#             build/app/outputs/flutter-apk/app-release.apk
+#             build/ios/iphoneos
 
-      # 9️⃣ Auto-create GitHub Release (version + artifacts)
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: "Flutter Build ${{ github.run_number }}"
-          body: |
-            🚀 **Automatic Flutter build completed**
-            ✅ Android & iOS builds attached
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       # 9️⃣ Auto-create GitHub Release (version + artifacts)
+#       - name: Create GitHub Release
+#         id: create_release
+#         uses: softprops/action-gh-release@v2
+#         with:
+#           tag_name: build-${{ github.run_number }}
+#           name: "Flutter Build ${{ github.run_number }}"
+#           body: |
+#             🚀 **Automatic Flutter build completed**
+#             ✅ Android & iOS builds attached
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 🔟 Upload files to release
-      - name: Upload build outputs
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          files: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/ios/iphoneos/Runner.app
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       # 🔟 Upload files to release
+#       - name: Upload build outputs
+#         uses: softprops/action-gh-release@v2
+#         with:
+#           tag_name: build-${{ github.run_number }}
+#           files: |
+#             build/app/outputs/flutter-apk/app-release.apk
+#             build/ios/iphoneos/Runner.app
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
